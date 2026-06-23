@@ -412,6 +412,13 @@ struct node {
     int dx;
     int dy;
 
+    node () {}
+
+    node (int a, int b) {
+        this->dx = a;
+        this->dy = b;
+    }
+
     bool operator<(const node& other) const {
         if (dx != other.dx)
             return dx < other.dx;
@@ -440,6 +447,8 @@ std::vector<Shape> solve_shapes;
 uint32_t next_shape_index = 1;
 
 std::map<node, std::vector<int>> node_to_shape_index;
+
+std::map<int, std::vector<node>> slash_nodes;
 
 uint32_t shape_digest(std::vector<uint32_t> shape_preview) {
     uint32_t digest = 0;
@@ -1180,6 +1189,7 @@ void print_DFS_puzzle(uint32_t** solve_puzzle) {
 bool visited[100][100];
 std::set<int> area_shape_sizes;
 bool contain_symbol = false;
+std::set<node> visited_nodes;
 
 int DFS_count_empty(int x, int y, uint32_t n_row, uint32_t n_col, uint32_t** solve_puzzle) {
     if (puzzle[x][y] == AREA_BLOCK) {
@@ -1192,6 +1202,7 @@ int DFS_count_empty(int x, int y, uint32_t n_row, uint32_t n_col, uint32_t** sol
         return 0;
     }
     visited[x][y] = true;
+    visited_nodes.insert(node(x, y));
     int count = 1;
     if (puzzle[x][y] & AREA_SHAPE_SIZE_BIT) {
         area_shape_sizes.insert((puzzle[x][y] & AREA_SHAPE_SIZE_BIT) >> AREA_SHAPE_SIZE_BIT_SHIFT);
@@ -1227,6 +1238,14 @@ int DFS_count_empty(int x, int y, uint32_t n_row, uint32_t n_col, uint32_t** sol
     if ((puzzle[x][y + 1] & LINE_BLOCK) == 0) {
         count += DFS_count_empty(x, y + 2, n_row, n_col, solve_puzzle);
     }
+
+    if ((puzzle[x + 1][y] & LINE_BLOCK) && visited_nodes.find(node(x + 2, y)) != visited_nodes.end()) {
+        count -= 1;
+    }
+    if ((puzzle[x][y + 1] & LINE_BLOCK) && visited_nodes.find(node(x, y + 1)) != visited_nodes.end()) {
+        count -= 1;
+    } 
+
     return count;
 }
 
@@ -1240,6 +1259,7 @@ bool empty_area_size_check(uint32_t min_shape_size, uint32_t max_shape_size, uin
             if (puzzle[(i << 1) + 1][(j << 1) + 1] != AREA_BLOCK && solve_puzzle[(i << 1) + 1][(j << 1) + 1] == AREA_NORMAL && !visited[(i << 1) + 1][(j << 1) + 1]) {
                 area_shape_sizes.clear();
                 contain_symbol = false;
+                visited_nodes.clear();
                 int empty_area_size = DFS_count_empty((i << 1) + 1, (j << 1) + 1, n_row, n_col, solve_puzzle);
                 if (empty_area_size < min_shape_size) {
                     // std::cout << "Empty area size check failed: found an empty area of size " << empty_area_size << " which is smaller than the minimum shape size " << min_shape_size << "." << std::endl;
@@ -1433,11 +1453,12 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
 
     // std::cout << "Trying to place non-predefined shape of size " << size << " at (" << x << ", " << y << ")" << std::endl;
 
-    bool mark_slash[slash_size + 1];
-    memset(mark_slash, 0, sizeof(mark_slash));
-
     const int MAX_SHAPE_SIZE = 100;
     const int MAX_EXPAND_CANDIDATES = (MAX_SHAPE_SIZE + 2) * 3;
+
+    bool mark_slash[slash_size + 1];
+    memset(mark_slash, 0, sizeof(mark_slash));
+    int slash_distance[MAX_SHAPE_SIZE][slash_size + 1][slash_nodes[1].size() + 1];
 
     node dfs_current_shape[MAX_SHAPE_SIZE];
     int dfs_current_shape_cnt = 0;
@@ -1572,11 +1593,12 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
         if (current_size == size) {
             // std::cout << "checking" << std::endl;
 
-            // print_DFS_puzzle(puzzle_n_row, puzzle_n_col, puzzle);
+            // print_DFS_puzzle(solve_puzzle);
             bool slash_check_fail_flag = false;
             for (int i = 1; i <= slash_size; i ++){
                 if (!mark_slash[i]) {
                     slash_check_fail_flag = true;
+                    // std::cout << "?" << std::endl;
                     break;
                 }
             }
@@ -1777,11 +1799,13 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             int ret;
 
             if (slash_size != 0 && !empty_area_slash_check(puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                // std::cout << "??" << std::endl;
                 ret = -1;
             }
             else if (!empty_area_size_check(puzzle_shape_size_lower_bound, puzzle_shape_size_upper_bound, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                // std::cout << "???" << std::endl;
                 ret = -1;
-                // std::cout << "Empty area size check failed after placing shape " << shape_index << std::endl;
+                // std::cout << "Empty area size check failed" << std::endl;
             }
             else {
                 if (puzzle_all_shapes_same) {
@@ -1806,6 +1830,8 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             continue;
         }
 
+        bool delta_size_check = false;
+
         while (candidates_i < candidates_size) {
 
             // std::cout << "Index: " << index << " Try" << " candidate (" << dfs_expand_candidates[candidates_i].dx << ", " << dfs_expand_candidates[candidates_i].dy << ") with distance " << dfs_expand_candidates_distance[candidates_i] << std::endl;
@@ -1813,21 +1839,47 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             expand_x = x + dfs_expand_candidates[candidates_i].dx;
             expand_y = y + dfs_expand_candidates[candidates_i].dy;
             expand_distance = dfs_expand_candidates_distance[candidates_i];
+            
+            bool jump_for_ordered_search = false;
             if (expand_distance < expand_distance_lb) {
                 candidates_i ++;
-                continue;
+                jump_for_ordered_search = true;
             }
             else if (expand_distance == expand_distance_lb) {
                 if (expand_x < expand_x_lb) {
                     candidates_i ++;
-                    continue;
+                    jump_for_ordered_search = true;
                 }
                 else if (expand_x == expand_x_lb) {
                     if (expand_y <= expand_y_lb) {
                         candidates_i ++;
-                        continue;
+                        jump_for_ordered_search = true;
                     }
                 }
+            }
+            if (jump_for_ordered_search) {
+                bool in_current_shape = false;
+                for (int j = 0; j < dfs_current_shape_cnt; ++j) {
+                    // std::cout << dfs_current_shape[j].dx << " " << dfs_current_shape[j].dy << std::endl;
+                    // std::cout << dfs_expand_candidates[candidates_i - 1].dx << " " << dfs_expand_candidates[candidates_i - 1].dy << std::endl;
+                    if (dfs_current_shape[j].dx == dfs_expand_candidates[candidates_i - 1].dx && dfs_current_shape[j].dy == dfs_expand_candidates[candidates_i - 1].dy) {
+                        in_current_shape = true;
+                        break;
+                    }
+                }
+                if (!in_current_shape) {
+                    // std::cout << expand_x << " " << expand_y << std::endl;
+                    memset(visited, 0, sizeof(visited));
+                    visited_nodes.clear();
+                    int size = DFS_count_empty(to_puzzle_x(expand_x), to_puzzle_y(expand_y), puzzle_n_row, puzzle_n_col, solve_puzzle);
+                    // std::cout << size << " " << puzzle_shape_size_lower_bound << std::endl;
+                    if (size < puzzle_shape_size_lower_bound) {
+                        // std::cout << "Delta Empty area size check failed" << std::endl;
+                        // delta_size_check = true;
+                        break;
+                    }
+                }
+                continue;
             }
 
             int slash_index = 0;
@@ -1889,6 +1941,35 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 }
                 if (dfs_current_shape[dfs_current_shape_cnt].dy > compass_visited[i].dy) {
                     compass_visited_right_cnt[i] ++;
+                }
+            }
+            // std::cout << dfs_current_shape[dfs_current_shape_cnt].dx << " " << dfs_current_shape[dfs_current_shape_cnt].dy  << " " << current_size << std::endl;
+            for (int i = 1; i <= slash_size; ++i) {
+                for (int j = 0; j < slash_nodes[1].size(); ++j) {
+                    
+                    if (dfs_current_shape_cnt == 0) {
+                        slash_distance[dfs_current_shape_cnt][i][j] = dfs_current_shape_cnt;
+                        continue;
+                    }
+                    else {
+                        slash_distance[dfs_current_shape_cnt][i][j] = slash_distance[dfs_current_shape_cnt - 1][i][j];
+                    }
+
+                    int new_distance = std::abs(x + dfs_current_shape[dfs_current_shape_cnt].dx - slash_nodes[i][j].dx) + std::abs(y + dfs_current_shape[dfs_current_shape_cnt].dy - slash_nodes[i][j].dy);
+                    int old_distance = std::abs(x + dfs_current_shape[slash_distance[dfs_current_shape_cnt][i][j]].dx - slash_nodes[i][j].dx) + std::abs(y + dfs_current_shape[slash_distance[dfs_current_shape_cnt][i][j]].dy - slash_nodes[i][j].dy);
+
+                    if (new_distance < old_distance) {
+                        slash_distance[dfs_current_shape_cnt][i][j] = dfs_current_shape_cnt;
+                    }
+
+                    // std::cout << slash_distance[dfs_current_shape_cnt][i] << " ";
+                    // for (auto entry: slash_nodes[i]) {
+                    //     int distance = std::abs(x + dfs_current_shape[dfs_current_shape_cnt].dx - entry.dx) + std::abs(y + dfs_current_shape[dfs_current_shape_cnt].dy - entry.dy);
+                    //     // std::cout << entry.dx << " " << entry.dy << " " << distance << std::endl;
+                    //     if (distance < slash_distance[dfs_current_shape_cnt][i]) {
+                    //         slash_distance[dfs_current_shape_cnt][i] = distance;
+                    //     }
+                    // }
                 }
             }
 
@@ -1987,7 +2068,83 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 }
             }
 
-            if (palisade_fail_flag || rectangle_fail_flag || compass_fail_flag) {
+            bool slash_distance_fail_flag = false;
+            // print_DFS_puzzle(solve_puzzle);
+            // std::cout << "check" << std::endl;
+            if (slash_size != 0) {
+                int distance_predict = 0x0fffffff;
+                int slash_node_indexs[slash_size + 1];
+                for (int i = 1; i <= slash_size; ++i) {
+                    slash_node_indexs[i] = 0;
+                }
+                while (true) {
+                    int minx = 0, maxx = 0, miny = 0, maxy = 0;
+                    for (int i = 1; i <= slash_size; ++i) {
+                        // std::cout << "select " << slash_node_indexs[i] << " " << slash_nodes[i][slash_node_indexs[i]].dx << " " << slash_nodes[i][slash_node_indexs[i]].dy << std::endl;
+                        if (mark_slash[i]) {
+                            continue;
+                        }
+                        // std::cout << "near " << dfs_current_shape[slash_distance[dfs_current_shape_cnt - 1][i][slash_node_indexs[i]]].dx << " " << dfs_current_shape[slash_distance[dfs_current_shape_cnt - 1][i][slash_node_indexs[i]]].dy << std::endl;
+                        int dx = x + dfs_current_shape[slash_distance[dfs_current_shape_cnt - 1][i][slash_node_indexs[i]]].dx - slash_nodes[i][slash_node_indexs[i]].dx;
+                        int dy = y + dfs_current_shape[slash_distance[dfs_current_shape_cnt - 1][i][slash_node_indexs[i]]].dy - slash_nodes[i][slash_node_indexs[i]].dy;
+                        minx = std::min(dx, minx);
+                        maxx = std::max(dx, maxx);
+                        miny = std::min(dy, miny);
+                        maxy = std::max(dy, maxy);
+                    }
+                    // std::cout << minx << " " << miny << " " << maxx << " " << maxy << std::endl;
+                    distance_predict = std::min(distance_predict, maxx + maxy - minx - miny);
+                    // std::cout << "distance predict " << distance_predict << std::endl;
+
+                    slash_node_indexs[1] += 1;
+                    int temp_loc = 1;
+                    bool final_flag = false;
+                    while (true) {
+                        if (slash_node_indexs[temp_loc] == slash_nodes[1].size()) {
+                            slash_node_indexs[temp_loc] = 0;
+                            if (temp_loc < slash_size) {
+                                slash_node_indexs[temp_loc + 1] += 1;
+                                temp_loc += 1;
+                            }
+                            else {
+                                final_flag = true;
+                                break;
+                            }
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    if (final_flag) {
+                        break;
+                    }
+                }
+
+                int remain_size = size - current_size - 1;
+                // std::cout << "remain_size " << remain_size << std::endl;
+
+                if (distance_predict > remain_size) {
+                    // std::cout << "remain_size check fail" << std::endl;
+                    slash_distance_fail_flag = true;
+                }
+
+            }
+            // for (int i = 1; i <= slash_size; ++i) {
+            //     // std::cout << i << " " << mark_slash[i] << " " << slash_distance[dfs_current_shape_cnt - 1][i] << std::endl;
+            //     int remain_size = size - current_size;
+            //     if (!mark_slash[i] && remain_size < slash_distance[dfs_current_shape_cnt - 1][i]) {
+            //         // std::cout << size << " " << remain_size << " " << slash_distance[dfs_current_shape_cnt - 1][i] << std::endl;
+            //         slash_distance_fail_flag = true;
+            //         break;
+            //     }
+            // }
+
+            if (palisade_fail_flag || rectangle_fail_flag || compass_fail_flag || slash_distance_fail_flag) {
+                // if (slash_distance_fail_flag) {
+                // printf("!!!");
+                //     print_DFS_puzzle(solve_puzzle);
+                // }
+
                 mark_slash[slash_index] = false;
                 solve_puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] = AREA_NORMAL;
                 dfs_current_shape_cnt --;
@@ -2130,6 +2287,9 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             stack_top ++;
             break;
         }
+        // if (delta_size_check) {
+        //     continue;
+        // }
     }
 
     return -1;
@@ -2192,6 +2352,31 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
         ret = 0;
         int l;
         memset(mark_slash, 0, sizeof(mark_slash));
+
+        bool slash_check_fail_flag = false;
+        // for (l = 0; l < shapes[k].search_order.size(); ++l) {
+        //     int new_x = ((x + shapes[k].search_order[l].dx) << 1) + 1;
+        //     int new_y = ((y + shapes[k].search_order[l].dy) << 1) + 1;
+        //     if (puzzle[new_x][new_y] & AREA_SLASH_INDEX_BIT) {
+        //         int slash_index = puzzle[new_x][new_y] >> AREA_SLASH_INDEX_BIT_SHIFT;
+        //         if (mark_slash[slash_index]) {
+        //             slash_check_fail_flag = true;
+        //             break;
+        //         }
+        //         mark_slash[slash_index] = true;
+        //     }
+        // }
+        // for (int i = 1; i <= slash_size; i ++){
+        //     if (!mark_slash[i]) {
+        //         slash_check_fail_flag = true;
+        //         break;
+        //     }
+        // }
+        // if (slash_check_fail_flag) {
+        //     continue;
+        // }
+
+
         palisade_visited_cnt = 0;
 
         symbol_loc = {-233, -666};
@@ -2494,6 +2679,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
     }
 
     memset(visited, 0, sizeof(visited));
+    visited_nodes.clear();
     size = DFS_count_empty(to_puzzle_x(x), to_puzzle_y(y), puzzle_n_row, puzzle_n_col, solve_puzzle);
 
     upper_bound = std::min(upper_bound, size);
@@ -2556,9 +2742,10 @@ int DFS_special_start(uint32_t index, uint32_t** solve_puzzle) {
 
     uint32_t target_shape_size = (puzzle[to_puzzle_x(x)][to_puzzle_y(y)] & AREA_SHAPE_SIZE_BIT) >> AREA_SHAPE_SIZE_BIT_SHIFT;
 
-    // std::cout << "Index: " << index << " DFS special at " << "(" << x << ", " << y << ")" << " with size " << target_shape_size << std::endl;
+    // std::cout << "Index: " << index << " DFS special at " << "(" << x << ", " << y << ")" << " with type " << special_start_type << std::endl;
 
     memset(visited, 0, sizeof(visited));
+    visited_nodes.clear();
     int remain_empty_size = DFS_count_empty(to_puzzle_x(x), to_puzzle_y(y), puzzle_n_row, puzzle_n_col, solve_puzzle);
 
     if (remain_empty_size < target_shape_size) {
@@ -2930,6 +3117,7 @@ int DFS_special_start(uint32_t index, uint32_t** solve_puzzle) {
         }
 
         memset(visited, 0, sizeof(visited));
+        visited_nodes.clear();
         int size = DFS_count_empty(to_puzzle_x(x), to_puzzle_y(y), puzzle_n_row, puzzle_n_col, solve_puzzle);
 
         upper_bound = std::min(upper_bound, size);
@@ -3131,6 +3319,20 @@ int main() {
                 int slash_index = (puzzle[to_puzzle_x(x)][to_puzzle_y(y)] & AREA_SLASH_INDEX_BIT) >> AREA_SLASH_INDEX_BIT_SHIFT;
                 slash_check_enable = true;
                 slash_size = std::max(slash_size, slash_index);
+            }
+        }
+    }
+
+    for (int x = 1; x <= slash_size; ++x) {
+        std::vector<node> temp;
+        slash_nodes[x] = temp;
+    }
+
+    for (int x = 1; x <= puzzle_n_row; ++x) {
+        for (int y = 1; y <= puzzle_n_col; ++y) {
+            if (puzzle[to_puzzle_x(x)][to_puzzle_y(y)] & AREA_SLASH_INDEX_BIT) {
+                int slash_index = (puzzle[to_puzzle_x(x)][to_puzzle_y(y)] & AREA_SLASH_INDEX_BIT) >> AREA_SLASH_INDEX_BIT_SHIFT;
+                slash_nodes[slash_index].push_back(node(x, y));
             }
         }
     }
