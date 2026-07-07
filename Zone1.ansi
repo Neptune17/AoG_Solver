@@ -6,1233 +6,1242 @@ Puzzle 目录: puzzles/Zone1
 找到 312 个 puzzle 文件
 ----------------------------------------
 [1] 处理: 10-same-shape-no-touch/0079.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008383569s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006646285s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0079.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [2] 处理: 10-same-shape-no-touch/0080.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009300636s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007270792s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0080.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [3] 处理: 10-same-shape-no-touch/0157.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010928911s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008823444s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0157.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [4] 处理: 10-same-shape-no-touch/0159.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006780272s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006156079s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0159.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [5] 处理: 10-same-shape-no-touch/0165.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .057382047s
+    [0;32m✓ 程序运行成功[0m - 耗时: .041307178s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0165.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [6] 处理: 10-same-shape-no-touch/0167.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .024499083s
+    [0;32m✓ 程序运行成功[0m - 耗时: .019776719s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0167.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [7] 处理: 10-same-shape-no-touch/0179B.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007302780s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006525228s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0179B.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [8] 处理: 10-same-shape-no-touch/0180.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008777144s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006544410s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0180.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [9] 处理: 10-same-shape-no-touch/0181.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008865711s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006154075s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0181.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [10] 处理: 10-same-shape-no-touch/0182.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008238699s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007663752s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0182.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [11] 处理: 10-same-shape-no-touch/0183.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007956855s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006027877s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0183.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [12] 处理: 10-same-shape-no-touch/0201.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .016827031s
+    [0;32m✓ 程序运行成功[0m - 耗时: .014593493s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0201.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [13] 处理: 10-same-shape-no-touch/0219.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .450417548s
+    [0;32m✓ 程序运行成功[0m - 耗时: .418659793s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0219.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [14] 处理: 10-same-shape-no-touch/0220.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007736811s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007202544s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0220.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [15] 处理: 10-same-shape-no-touch/0276.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .177691676s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008360208s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0276.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [16] 处理: 10-same-shape-no-touch/0324.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007333979s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006644660s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0324.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [17] 处理: 10-same-shape-no-touch/0329.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .112947575s
+    [0;32m✓ 程序运行成功[0m - 耗时: .286370822s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0329.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [18] 处理: 10-same-shape-no-touch/0331.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .275216282s
+    [0;32m✓ 程序运行成功[0m - 耗时: .580152913s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0331.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [19] 处理: 10-same-shape-no-touch/0474.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008666650s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005457201s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/0474.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [20] 处理: 10-same-shape-no-touch/1029.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006410684s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006938544s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1029.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [21] 处理: 10-same-shape-no-touch/1031.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .023235312s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008206074s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1031.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [22] 处理: 10-same-shape-no-touch/1033.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007390313s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007026706s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1033.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [23] 处理: 10-same-shape-no-touch/1065.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007514833s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006644716s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1065.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [24] 处理: 10-same-shape-no-touch/1066.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009022803s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007623385s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1066.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [25] 处理: 10-same-shape-no-touch/1068.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010139835s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008987418s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1068.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [26] 处理: 10-same-shape-no-touch/1069.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .169030189s
+    [0;32m✓ 程序运行成功[0m - 耗时: .259554157s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1069.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [27] 处理: 10-same-shape-no-touch/1070.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008695024s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007325358s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1070.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [28] 处理: 10-same-shape-no-touch/1122.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007921283s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006425356s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1122.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [29] 处理: 10-same-shape-no-touch/1123.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .015093782s
+    [0;32m✓ 程序运行成功[0m - 耗时: .019182537s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1123.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [30] 处理: 10-same-shape-no-touch/1167.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006567199s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006084567s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1167.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [31] 处理: 10-same-shape-no-touch/1243.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007076928s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006005506s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1243.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [32] 处理: 10-same-shape-no-touch/1244.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .021789481s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007493147s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1244.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [33] 处理: 10-same-shape-no-touch/1252.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .015760562s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006999202s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1252.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [34] 处理: 10-same-shape-no-touch/1424.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010911930s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008798474s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1424.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [35] 处理: 10-same-shape-no-touch/1426.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008897199s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007619147s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1426.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [36] 处理: 10-same-shape-no-touch/1427.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010408297s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007679699s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1427.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [37] 处理: 10-same-shape-no-touch/1428.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .014999069s
+    [0;32m✓ 程序运行成功[0m - 耗时: .012881661s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1428.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [38] 处理: 10-same-shape-no-touch/1429.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .043555055s
+    [0;32m✓ 程序运行成功[0m - 耗时: .028167133s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1429.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [39] 处理: 10-same-shape-no-touch/1435.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.264337921s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.247985719s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1435.log
 [40] 处理: 10-same-shape-no-touch/1438.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .014357116s
+    [0;32m✓ 程序运行成功[0m - 耗时: .012618723s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1438.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [41] 处理: 10-same-shape-no-touch/1439.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .014939087s
+    [0;32m✓ 程序运行成功[0m - 耗时: .014235085s
     日志: puzzles/Zone1/logs/10-same-shape-no-touch/1439.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [42] 处理: 11-mixed-rules/0046.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .016129267s
+    [0;32m✓ 程序运行成功[0m - 耗时: .012683156s
     日志: puzzles/Zone1/logs/11-mixed-rules/0046.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [43] 处理: 11-mixed-rules/0136.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007391647s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007423319s
     日志: puzzles/Zone1/logs/11-mixed-rules/0136.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [44] 处理: 11-mixed-rules/0172.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.023725633s
+    [0;32m✓ 程序运行成功[0m - 耗时: .016310994s
     日志: puzzles/Zone1/logs/11-mixed-rules/0172.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [45] 处理: 11-mixed-rules/0173.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .017813393s
+    [0;32m✓ 程序运行成功[0m - 耗时: .012657675s
     日志: puzzles/Zone1/logs/11-mixed-rules/0173.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [46] 处理: 11-mixed-rules/0174.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009496457s
+    [0;32m✓ 程序运行成功[0m - 耗时: .035679429s
     日志: puzzles/Zone1/logs/11-mixed-rules/0174.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [47] 处理: 11-mixed-rules/0176.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006884240s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006500782s
     日志: puzzles/Zone1/logs/11-mixed-rules/0176.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [48] 处理: 11-mixed-rules/0177.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008390096s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007253972s
     日志: puzzles/Zone1/logs/11-mixed-rules/0177.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [49] 处理: 11-mixed-rules/0178.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007973608s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008126426s
     日志: puzzles/Zone1/logs/11-mixed-rules/0178.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [50] 处理: 11-mixed-rules/0224.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .836436217s
+    [0;32m✓ 程序运行成功[0m - 耗时: .660261865s
     日志: puzzles/Zone1/logs/11-mixed-rules/0224.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [51] 处理: 11-mixed-rules/0225.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009070276s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007734539s
     日志: puzzles/Zone1/logs/11-mixed-rules/0225.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [52] 处理: 11-mixed-rules/0226.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007834565s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006057722s
     日志: puzzles/Zone1/logs/11-mixed-rules/0226.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [53] 处理: 11-mixed-rules/0227.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .037128481s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007801579s
     日志: puzzles/Zone1/logs/11-mixed-rules/0227.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [54] 处理: 11-mixed-rules/0228.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .051617297s
+    [0;32m✓ 程序运行成功[0m - 耗时: .041934082s
     日志: puzzles/Zone1/logs/11-mixed-rules/0228.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [55] 处理: 11-mixed-rules/0229.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .047608939s
+    [0;32m✓ 程序运行成功[0m - 耗时: .053045330s
     日志: puzzles/Zone1/logs/11-mixed-rules/0229.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [56] 处理: 11-mixed-rules/0230.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .036891796s
+    [0;32m✓ 程序运行成功[0m - 耗时: .021677491s
     日志: puzzles/Zone1/logs/11-mixed-rules/0230.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [57] 处理: 11-mixed-rules/0231.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .012344013s
+    [0;32m✓ 程序运行成功[0m - 耗时: .014329639s
     日志: puzzles/Zone1/logs/11-mixed-rules/0231.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [58] 处理: 11-mixed-rules/0232.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .948219279s
+    [0;32m✓ 程序运行成功[0m - 耗时: .013752234s
     日志: puzzles/Zone1/logs/11-mixed-rules/0232.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [59] 处理: 11-mixed-rules/0247.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007550942s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006041373s
     日志: puzzles/Zone1/logs/11-mixed-rules/0247.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [60] 处理: 11-mixed-rules/0248.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .018927421s
+    [0;32m✓ 程序运行成功[0m - 耗时: .010225675s
     日志: puzzles/Zone1/logs/11-mixed-rules/0248.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [61] 处理: 11-mixed-rules/0249.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .030116445s
+    [0;32m✓ 程序运行成功[0m - 耗时: .017646096s
     日志: puzzles/Zone1/logs/11-mixed-rules/0249.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [62] 处理: 11-mixed-rules/0250.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .015280266s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009400132s
     日志: puzzles/Zone1/logs/11-mixed-rules/0250.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [63] 处理: 11-mixed-rules/0252.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 7.076300670s
+    [0;32m✓ 程序运行成功[0m - 耗时: .144843064s
     日志: puzzles/Zone1/logs/11-mixed-rules/0252.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [64] 处理: 11-mixed-rules/0253.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008842197s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007775963s
     日志: puzzles/Zone1/logs/11-mixed-rules/0253.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [65] 处理: 11-mixed-rules/0259.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .016099134s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007454019s
     日志: puzzles/Zone1/logs/11-mixed-rules/0259.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [66] 处理: 11-mixed-rules/0535.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .045090891s
+    [0;32m✓ 程序运行成功[0m - 耗时: .031108802s
     日志: puzzles/Zone1/logs/11-mixed-rules/0535.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [67] 处理: 11-mixed-rules/0538.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .365523959s
+    [0;32m✓ 程序运行成功[0m - 耗时: .089480028s
     日志: puzzles/Zone1/logs/11-mixed-rules/0538.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [68] 处理: 11-mixed-rules/0695.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .048591566s
+    [0;32m✓ 程序运行成功[0m - 耗时: .011431257s
     日志: puzzles/Zone1/logs/11-mixed-rules/0695.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [69] 处理: 11-mixed-rules/0732.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .005559140s
+    [0;32m✓ 程序运行成功[0m - 耗时: .004957258s
     日志: puzzles/Zone1/logs/11-mixed-rules/0732.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [70] 处理: 11-mixed-rules/0783.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .016073483s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007292275s
     日志: puzzles/Zone1/logs/11-mixed-rules/0783.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [71] 处理: 11-mixed-rules/0784.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 2.455973373s
+    [0;32m✓ 程序运行成功[0m - 耗时: .034849302s
     日志: puzzles/Zone1/logs/11-mixed-rules/0784.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [72] 处理: 11-mixed-rules/0861.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009681967s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009271348s
     日志: puzzles/Zone1/logs/11-mixed-rules/0861.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [73] 处理: 11-mixed-rules/0880.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.158313751s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009872079s
     日志: puzzles/Zone1/logs/11-mixed-rules/0880.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [74] 处理: 11-mixed-rules/0881g.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .047396854s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008693946s
     日志: puzzles/Zone1/logs/11-mixed-rules/0881g.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [75] 处理: 11-mixed-rules/0881.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .331368380s
+    [0;32m✓ 程序运行成功[0m - 耗时: .020063665s
     日志: puzzles/Zone1/logs/11-mixed-rules/0881.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [76] 处理: 11-mixed-rules/0882.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.008795182s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.004535156s
     日志: puzzles/Zone1/logs/11-mixed-rules/0882.log
 [77] 处理: 11-mixed-rules/1030.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007681801s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007185749s
     日志: puzzles/Zone1/logs/11-mixed-rules/1030.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [78] 处理: 11-mixed-rules/1036.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006458727s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007150310s
     日志: puzzles/Zone1/logs/11-mixed-rules/1036.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [79] 处理: 11-mixed-rules/1037.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .057883508s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007200415s
     日志: puzzles/Zone1/logs/11-mixed-rules/1037.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [80] 处理: 11-mixed-rules/1096.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007503454s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007065195s
     日志: puzzles/Zone1/logs/11-mixed-rules/1096.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [81] 处理: 11-mixed-rules/1097.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.569823591s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009371611s
     日志: puzzles/Zone1/logs/11-mixed-rules/1097.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [82] 处理: 11-mixed-rules/1098.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.003407258s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.008623219s
     日志: puzzles/Zone1/logs/11-mixed-rules/1098.log
 [83] 处理: 11-mixed-rules/1099.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.004074521s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.006637909s
     日志: puzzles/Zone1/logs/11-mixed-rules/1099.log
 [84] 处理: 11-mixed-rules/1100.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.003050105s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.007178325s
     日志: puzzles/Zone1/logs/11-mixed-rules/1100.log
 [85] 处理: 11-mixed-rules/1125.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008326211s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008003040s
     日志: puzzles/Zone1/logs/11-mixed-rules/1125.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [86] 处理: 11-mixed-rules/1168.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .015629587s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007791850s
     日志: puzzles/Zone1/logs/11-mixed-rules/1168.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [87] 处理: 11-mixed-rules/1170b.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008324882s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008542086s
     日志: puzzles/Zone1/logs/11-mixed-rules/1170b.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [88] 处理: 11-mixed-rules/1171.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010536078s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007435275s
     日志: puzzles/Zone1/logs/11-mixed-rules/1171.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [89] 处理: 11-mixed-rules/1172.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007356496s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007128179s
     日志: puzzles/Zone1/logs/11-mixed-rules/1172.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [90] 处理: 11-mixed-rules/1250.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007345576s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006484761s
     日志: puzzles/Zone1/logs/11-mixed-rules/1250.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [91] 处理: 11-mixed-rules/1269.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007255970s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006598121s
     日志: puzzles/Zone1/logs/11-mixed-rules/1269.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [92] 处理: 11-mixed-rules/1270.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 1.497628013s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.009274196s
     日志: puzzles/Zone1/logs/11-mixed-rules/1270.log
-    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [93] 处理: 1-single-shape/0008.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006775566s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006230671s
     日志: puzzles/Zone1/logs/1-single-shape/0008.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [94] 处理: 1-single-shape/0009.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .005559288s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006021737s
     日志: puzzles/Zone1/logs/1-single-shape/0009.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [95] 处理: 1-single-shape/0012.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006702761s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006098623s
     日志: puzzles/Zone1/logs/1-single-shape/0012.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [96] 处理: 1-single-shape/0049.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006346244s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005784600s
     日志: puzzles/Zone1/logs/1-single-shape/0049.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [97] 处理: 1-single-shape/0050.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006346243s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005899626s
     日志: puzzles/Zone1/logs/1-single-shape/0050.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [98] 处理: 1-single-shape/0053.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006583375s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006198539s
     日志: puzzles/Zone1/logs/1-single-shape/0053.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [99] 处理: 1-single-shape/0054.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .005368709s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006139089s
     日志: puzzles/Zone1/logs/1-single-shape/0054.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [100] 处理: 1-single-shape/0066.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006203801s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005669580s
     日志: puzzles/Zone1/logs/1-single-shape/0066.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [101] 处理: 1-single-shape/0067B.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006478356s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005754930s
     日志: puzzles/Zone1/logs/1-single-shape/0067B.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [102] 处理: 1-single-shape/0067.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006358424s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006313711s
     日志: puzzles/Zone1/logs/1-single-shape/0067.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [103] 处理: 1-single-shape/0527.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006448350s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006121141s
     日志: puzzles/Zone1/logs/1-single-shape/0527.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [104] 处理: 1-single-shape/0643.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .005898507s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005783534s
     日志: puzzles/Zone1/logs/1-single-shape/0643.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [105] 处理: 2-shape-bank/0051.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006247907s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006072342s
     日志: puzzles/Zone1/logs/2-shape-bank/0051.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [106] 处理: 2-shape-bank/0052.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006204912s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005955026s
     日志: puzzles/Zone1/logs/2-shape-bank/0052.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [107] 处理: 2-shape-bank/0057.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006499048s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005888076s
     日志: puzzles/Zone1/logs/2-shape-bank/0057.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [108] 处理: 2-shape-bank/0058.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006206658s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006048479s
     日志: puzzles/Zone1/logs/2-shape-bank/0058.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [109] 处理: 2-shape-bank/0059.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006494764s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005749962s
     日志: puzzles/Zone1/logs/2-shape-bank/0059.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [110] 处理: 2-shape-bank/0072.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006316100s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006293352s
     日志: puzzles/Zone1/logs/2-shape-bank/0072.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [111] 处理: 2-shape-bank/0115.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006357079s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005223163s
     日志: puzzles/Zone1/logs/2-shape-bank/0115.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [112] 处理: 2-shape-bank/0422.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006109785s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006381026s
     日志: puzzles/Zone1/logs/2-shape-bank/0422.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [113] 处理: 2-shape-bank/0425.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .012881642s
+    [0;32m✓ 程序运行成功[0m - 耗时: .012924322s
     日志: puzzles/Zone1/logs/2-shape-bank/0425.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [114] 处理: 2-shape-bank/0426.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006617205s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005952593s
     日志: puzzles/Zone1/logs/2-shape-bank/0426.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [115] 处理: 2-shape-bank/1393.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .023689879s
+    [0;32m✓ 程序运行成功[0m - 耗时: .026482688s
     日志: puzzles/Zone1/logs/2-shape-bank/1393.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [116] 处理: 3-gemini-delta/0042.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007249926s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006327844s
     日志: puzzles/Zone1/logs/3-gemini-delta/0042.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [117] 处理: 3-gemini-delta/0043.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007445204s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006452857s
     日志: puzzles/Zone1/logs/3-gemini-delta/0043.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [118] 处理: 3-gemini-delta/0095.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006306861s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006099403s
     日志: puzzles/Zone1/logs/3-gemini-delta/0095.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [119] 处理: 3-gemini-delta/0096.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006274347s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006202126s
     日志: puzzles/Zone1/logs/3-gemini-delta/0096.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [120] 处理: 3-gemini-delta/0101.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006613598s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006055668s
     日志: puzzles/Zone1/logs/3-gemini-delta/0101.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [121] 处理: 3-gemini-delta/0693b.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006302189s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006033865s
     日志: puzzles/Zone1/logs/3-gemini-delta/0693b.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [122] 处理: 3-gemini-delta/1271.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006671778s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006056281s
     日志: puzzles/Zone1/logs/3-gemini-delta/1271.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [123] 处理: 3-gemini-delta/1281.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006165917s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006105930s
     日志: puzzles/Zone1/logs/3-gemini-delta/1281.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [124] 处理: 4-slash-pack/0210.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006533308s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005990049s
     日志: puzzles/Zone1/logs/4-slash-pack/0210.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [125] 处理: 4-slash-pack/0211.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.011169009s
+    [0;32m✓ 程序运行成功[0m - 耗时: .011064623s
     日志: puzzles/Zone1/logs/4-slash-pack/0211.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [126] 处理: 4-slash-pack/0212.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007093804s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005990014s
     日志: puzzles/Zone1/logs/4-slash-pack/0212.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [127] 处理: 4-slash-pack/1283.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006995006s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005598243s
     日志: puzzles/Zone1/logs/4-slash-pack/1283.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [128] 处理: 4-slash-pack/1284pad.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.011117764s
+    [0;32m✓ 程序运行成功[0m - 耗时: .549442620s
     日志: puzzles/Zone1/logs/4-slash-pack/1284pad.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [129] 处理: 5-shape-bank/0055.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006875025s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005449595s
     日志: puzzles/Zone1/logs/5-shape-bank/0055.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [130] 处理: 5-shape-bank/0056.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007476331s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006549835s
     日志: puzzles/Zone1/logs/5-shape-bank/0056.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [131] 处理: 5-shape-bank/0060.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007463334s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006288058s
     日志: puzzles/Zone1/logs/5-shape-bank/0060.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [132] 处理: 5-shape-bank/0061.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006996956s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006190968s
     日志: puzzles/Zone1/logs/5-shape-bank/0061.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [133] 处理: 5-shape-bank/0064.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007365648s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007124965s
     日志: puzzles/Zone1/logs/5-shape-bank/0064.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [134] 处理: 5-shape-bank/0065.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008671143s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008646146s
     日志: puzzles/Zone1/logs/5-shape-bank/0065.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [135] 处理: 5-shape-bank/0074.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006895315s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006359440s
     日志: puzzles/Zone1/logs/5-shape-bank/0074.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [136] 处理: 5-shape-bank/0077.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008349863s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007794194s
     日志: puzzles/Zone1/logs/5-shape-bank/0077.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [137] 处理: 5-shape-bank/0085.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007800068s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007512166s
     日志: puzzles/Zone1/logs/5-shape-bank/0085.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [138] 处理: 5-shape-bank/0117.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007003846s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006155514s
     日志: puzzles/Zone1/logs/5-shape-bank/0117.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [139] 处理: 5-shape-bank/0124.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .012444353s
+    [0;32m✓ 程序运行成功[0m - 耗时: .010570261s
     日志: puzzles/Zone1/logs/5-shape-bank/0124.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [140] 处理: 5-shape-bank/0235.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006792171s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005977382s
     日志: puzzles/Zone1/logs/5-shape-bank/0235.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [141] 处理: 5-shape-bank/0236.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006281081s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005947162s
     日志: puzzles/Zone1/logs/5-shape-bank/0236.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [142] 处理: 5-shape-bank/0237.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .012371139s
+    [0;32m✓ 程序运行成功[0m - 耗时: .014673740s
     日志: puzzles/Zone1/logs/5-shape-bank/0237.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [143] 处理: 5-shape-bank/0238.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006211017s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005672574s
     日志: puzzles/Zone1/logs/5-shape-bank/0238.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [144] 处理: 5-shape-bank/0239.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006450781s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005814628s
     日志: puzzles/Zone1/logs/5-shape-bank/0239.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [145] 处理: 5-shape-bank/0266.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008695727s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008096956s
     日志: puzzles/Zone1/logs/5-shape-bank/0266.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [146] 处理: 5-shape-bank/0267.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010821194s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008792253s
     日志: puzzles/Zone1/logs/5-shape-bank/0267.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [147] 处理: 5-shape-bank/0416.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .013137370s
+    [0;32m✓ 程序运行成功[0m - 耗时: .012977999s
     日志: puzzles/Zone1/logs/5-shape-bank/0416.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [148] 处理: 5-shape-bank/0423.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007009906s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006776917s
     日志: puzzles/Zone1/logs/5-shape-bank/0423.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [149] 处理: 5-shape-bank/0424.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006840622s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007075840s
     日志: puzzles/Zone1/logs/5-shape-bank/0424.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [150] 处理: 5-shape-bank/0551.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007500859s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007264446s
     日志: puzzles/Zone1/logs/5-shape-bank/0551.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [151] 处理: 5-shape-bank/0948.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .012459106s
+    [0;32m✓ 程序运行成功[0m - 耗时: .020274911s
     日志: puzzles/Zone1/logs/5-shape-bank/0948.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [152] 处理: 5-shape-bank/0949.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006907402s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007509461s
     日志: puzzles/Zone1/logs/5-shape-bank/0949.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [153] 处理: 5-shape-bank/0950.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006579373s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006253261s
     日志: puzzles/Zone1/logs/5-shape-bank/0950.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [154] 处理: 5-shape-bank/1239.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006923834s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006455764s
     日志: puzzles/Zone1/logs/5-shape-bank/1239.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [155] 处理: 5-shape-bank/1240.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006688509s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006332130s
     日志: puzzles/Zone1/logs/5-shape-bank/1240.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [156] 处理: 5-shape-bank/1251.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007821715s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006808443s
     日志: puzzles/Zone1/logs/5-shape-bank/1251.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [157] 处理: 5-shape-bank/1285.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008822942s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008996951s
     日志: puzzles/Zone1/logs/5-shape-bank/1285.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [158] 处理: 5-shape-bank/1444.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008590229s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007703386s
     日志: puzzles/Zone1/logs/5-shape-bank/1444.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [159] 处理: 5-shape-bank/1445.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007065452s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006460773s
     日志: puzzles/Zone1/logs/5-shape-bank/1445.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [160] 处理: 6-gemini-delta/0027.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006243285s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006103365s
     日志: puzzles/Zone1/logs/6-gemini-delta/0027.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [161] 处理: 6-gemini-delta/0091.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007014466s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005814008s
     日志: puzzles/Zone1/logs/6-gemini-delta/0091.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [162] 处理: 6-gemini-delta/0097.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006535503s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006178975s
     日志: puzzles/Zone1/logs/6-gemini-delta/0097.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [163] 处理: 6-gemini-delta/0099.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008336263s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005887813s
     日志: puzzles/Zone1/logs/6-gemini-delta/0099.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [164] 处理: 6-gemini-delta/0105nopad.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006694731s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006620421s
     日志: puzzles/Zone1/logs/6-gemini-delta/0105nopad.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [165] 处理: 6-gemini-delta/0106nopad.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008407006s
+    [0;32m✓ 程序运行成功[0m - 耗时: .010499314s
     日志: puzzles/Zone1/logs/6-gemini-delta/0106nopad.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [166] 处理: 6-gemini-delta/0107nopad.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006646496s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006168630s
     日志: puzzles/Zone1/logs/6-gemini-delta/0107nopad.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [167] 处理: 6-gemini-delta/0108.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006788084s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005171499s
     日志: puzzles/Zone1/logs/6-gemini-delta/0108.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [168] 处理: 6-gemini-delta/0109.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008284000s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006549687s
     日志: puzzles/Zone1/logs/6-gemini-delta/0109.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [169] 处理: 6-gemini-delta/0114.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 1.181749106s
+    [0;32m✓ 程序运行成功[0m - 耗时: 4.143675799s
     日志: puzzles/Zone1/logs/6-gemini-delta/0114.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [170] 处理: 6-gemini-delta/0126.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007962465s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006924770s
     日志: puzzles/Zone1/logs/6-gemini-delta/0126.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [171] 处理: 6-gemini-delta/0528.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007504182s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006674271s
     日志: puzzles/Zone1/logs/6-gemini-delta/0528.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [172] 处理: 6-gemini-delta/0529.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009090146s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009078790s
     日志: puzzles/Zone1/logs/6-gemini-delta/0529.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [173] 处理: 6-gemini-delta/0530.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006671945s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006814752s
     日志: puzzles/Zone1/logs/6-gemini-delta/0530.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [174] 处理: 6-gemini-delta/0531.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007126079s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007066758s
     日志: puzzles/Zone1/logs/6-gemini-delta/0531.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [175] 处理: 6-gemini-delta/0533.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009162015s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009549229s
     日志: puzzles/Zone1/logs/6-gemini-delta/0533.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [176] 处理: 6-gemini-delta/0536.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .029028130s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009631394s
     日志: puzzles/Zone1/logs/6-gemini-delta/0536.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [177] 处理: 6-gemini-delta/0672.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007916195s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006491910s
     日志: puzzles/Zone1/logs/6-gemini-delta/0672.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [178] 处理: 6-gemini-delta/0673.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007686827s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008614813s
     日志: puzzles/Zone1/logs/6-gemini-delta/0673.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [179] 处理: 6-gemini-delta/0692.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006792822s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005777433s
     日志: puzzles/Zone1/logs/6-gemini-delta/0692.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [180] 处理: 6-gemini-delta/0694.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007512977s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006901655s
     日志: puzzles/Zone1/logs/6-gemini-delta/0694.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [181] 处理: 6-gemini-delta/0946.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008079788s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007613094s
     日志: puzzles/Zone1/logs/6-gemini-delta/0946.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [182] 处理: 6-gemini-delta/1024.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.012807115s
+    [0;32m✓ 程序运行成功[0m - 耗时: .029227541s
     日志: puzzles/Zone1/logs/6-gemini-delta/1024.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [183] 处理: 6-gemini-delta/1025.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .050235877s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009709741s
     日志: puzzles/Zone1/logs/6-gemini-delta/1025.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [184] 处理: 6-gemini-delta/1160.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008333778s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007262004s
     日志: puzzles/Zone1/logs/6-gemini-delta/1160.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [185] 处理: 6-gemini-delta/1161.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006336846s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005873675s
     日志: puzzles/Zone1/logs/6-gemini-delta/1161.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [186] 处理: 6-gemini-delta/1162.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007321117s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006410923s
     日志: puzzles/Zone1/logs/6-gemini-delta/1162.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [187] 处理: 6-gemini-delta/1241.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .088572280s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007211113s
     日志: puzzles/Zone1/logs/6-gemini-delta/1241.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [188] 处理: 6-gemini-delta/1275.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006910595s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006418490s
     日志: puzzles/Zone1/logs/6-gemini-delta/1275.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [189] 处理: 6-gemini-delta/1276.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .005949827s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006269640s
     日志: puzzles/Zone1/logs/6-gemini-delta/1276.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [190] 处理: 6-gemini-delta/1278.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008542793s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006549155s
     日志: puzzles/Zone1/logs/6-gemini-delta/1278.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [191] 处理: 6-gemini-delta/1280.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008018829s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006893506s
     日志: puzzles/Zone1/logs/6-gemini-delta/1280.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [192] 处理: 6-gemini-delta/1415pad.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008807784s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006978197s
     日志: puzzles/Zone1/logs/6-gemini-delta/1415pad.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [193] 处理: 7-slash-pack/0195.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007482530s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006234671s
     日志: puzzles/Zone1/logs/7-slash-pack/0195.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [194] 处理: 7-slash-pack/0196flip.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 6.878920432s
+    [0;32m✓ 程序运行成功[0m - 耗时: .096111913s
     日志: puzzles/Zone1/logs/7-slash-pack/0196flip.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [195] 处理: 7-slash-pack/0197.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 7.685074474s
+    [0;32m✓ 程序运行成功[0m - 耗时: 6.842964514s
     日志: puzzles/Zone1/logs/7-slash-pack/0197.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [196] 处理: 7-slash-pack/0198.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .026093321s
+    [0;32m✓ 程序运行成功[0m - 耗时: .011040045s
     日志: puzzles/Zone1/logs/7-slash-pack/0198.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [197] 处理: 7-slash-pack/0213nopad.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .087351134s
+    [0;32m✓ 程序运行成功[0m - 耗时: .017117681s
     日志: puzzles/Zone1/logs/7-slash-pack/0213nopad.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [198] 处理: 7-slash-pack/0213.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .079923967s
+    [0;32m✓ 程序运行成功[0m - 耗时: .017433442s
     日志: puzzles/Zone1/logs/7-slash-pack/0213.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [199] 处理: 7-slash-pack/0214.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.009744158s
+    [0;32m✓ 程序运行成功[0m - 耗时: 8.669450706s
     日志: puzzles/Zone1/logs/7-slash-pack/0214.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [200] 处理: 7-slash-pack/0215.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007486230s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008774402s
     日志: puzzles/Zone1/logs/7-slash-pack/0215.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [201] 处理: 7-slash-pack/0216.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .013456799s
+    [0;32m✓ 程序运行成功[0m - 耗时: .013730790s
     日志: puzzles/Zone1/logs/7-slash-pack/0216.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [202] 处理: 7-slash-pack/0217.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .076611847s
+    [0;32m✓ 程序运行成功[0m - 耗时: .067303756s
     日志: puzzles/Zone1/logs/7-slash-pack/0217.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [203] 处理: 7-slash-pack/0218.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.009221951s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.006259267s
     日志: puzzles/Zone1/logs/7-slash-pack/0218.log
 [204] 处理: 7-slash-pack/0221.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008929114s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005935044s
     日志: puzzles/Zone1/logs/7-slash-pack/0221.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [205] 处理: 7-slash-pack/0222.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007374769s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007348141s
     日志: puzzles/Zone1/logs/7-slash-pack/0222.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [206] 处理: 7-slash-pack/0223.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.003764952s
+    [0;32m✓ 程序运行成功[0m - 耗时: 7.902063521s
     日志: puzzles/Zone1/logs/7-slash-pack/0223.log
-[207] 处理: 7-slash-pack/0277.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 4.791005717s
-    日志: puzzles/Zone1/logs/7-slash-pack/0277.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
+[207] 处理: 7-slash-pack/0277.puz
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.018582843s
+    日志: puzzles/Zone1/logs/7-slash-pack/0277.log
 [208] 处理: 7-slash-pack/0296.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .134209378s
+    [0;32m✓ 程序运行成功[0m - 耗时: .183032112s
     日志: puzzles/Zone1/logs/7-slash-pack/0296.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [209] 处理: 7-slash-pack/0454.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.011958007s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.008909531s
     日志: puzzles/Zone1/logs/7-slash-pack/0454.log
 [210] 处理: 7-slash-pack/0455.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .026821006s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009921763s
     日志: puzzles/Zone1/logs/7-slash-pack/0455.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [211] 处理: 7-slash-pack/0801.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007416776s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006896520s
     日志: puzzles/Zone1/logs/7-slash-pack/0801.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [212] 处理: 7-slash-pack/0802.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008286052s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007037575s
     日志: puzzles/Zone1/logs/7-slash-pack/0802.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [213] 处理: 7-slash-pack/0803.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .005866881s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006517030s
     日志: puzzles/Zone1/logs/7-slash-pack/0803.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [214] 处理: 7-slash-pack/0804.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.010262589s
+    [0;32m✓ 程序运行成功[0m - 耗时: 2.042370785s
     日志: puzzles/Zone1/logs/7-slash-pack/0804.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [215] 处理: 7-slash-pack/0805.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .068890481s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008247672s
     日志: puzzles/Zone1/logs/7-slash-pack/0805.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [216] 处理: 7-slash-pack/0833.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.027850811s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.007793598s
     日志: puzzles/Zone1/logs/7-slash-pack/0833.log
 [217] 处理: 7-slash-pack/0939.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .060952447s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007008987s
     日志: puzzles/Zone1/logs/7-slash-pack/0939.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [218] 处理: 7-slash-pack/1163.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .013975940s
+    [0;32m✓ 程序运行成功[0m - 耗时: .011013469s
     日志: puzzles/Zone1/logs/7-slash-pack/1163.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [219] 处理: 7-slash-pack/1164.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .109724229s
+    [0;32m✓ 程序运行成功[0m - 耗时: .110533815s
     日志: puzzles/Zone1/logs/7-slash-pack/1164.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [220] 处理: 7-slash-pack/1165.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007074041s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005695669s
     日志: puzzles/Zone1/logs/7-slash-pack/1165.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [221] 处理: 7-slash-pack/1236.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007467221s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007794377s
     日志: puzzles/Zone1/logs/7-slash-pack/1236.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [222] 处理: 7-slash-pack/1237.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009841666s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008189295s
     日志: puzzles/Zone1/logs/7-slash-pack/1237.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [223] 处理: 7-slash-pack/1238.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .018486083s
+    [0;32m✓ 程序运行成功[0m - 耗时: .016569812s
     日志: puzzles/Zone1/logs/7-slash-pack/1238.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [224] 处理: 7-slash-pack/1273.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 2.670546898s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009098837s
     日志: puzzles/Zone1/logs/7-slash-pack/1273.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [225] 处理: 7-slash-pack/1274.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008001685s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006606360s
     日志: puzzles/Zone1/logs/7-slash-pack/1274.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [226] 处理: 7-slash-pack/1279.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006934203s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006298639s
     日志: puzzles/Zone1/logs/7-slash-pack/1279.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [227] 处理: 7-slash-pack/1430.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008802780s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007493349s
     日志: puzzles/Zone1/logs/7-slash-pack/1430.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [228] 处理: 7-slash-pack/1433.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.010453600s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.006703188s
     日志: puzzles/Zone1/logs/7-slash-pack/1433.log
 [229] 处理: 7-slash-pack/1434.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.004052410s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.002501832s
     日志: puzzles/Zone1/logs/7-slash-pack/1434.log
 [230] 处理: 8-poly/0123.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006191645s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005575301s
     日志: puzzles/Zone1/logs/8-poly/0123.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [231] 处理: 8-poly/0128.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007462440s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006680006s
     日志: puzzles/Zone1/logs/8-poly/0128.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [232] 处理: 8-poly/0133.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007879580s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007645073s
     日志: puzzles/Zone1/logs/8-poly/0133.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [233] 处理: 8-poly/0134.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007720000s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006458998s
     日志: puzzles/Zone1/logs/8-poly/0134.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [234] 处理: 8-poly/0135.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007748197s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006291735s
     日志: puzzles/Zone1/logs/8-poly/0135.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [235] 处理: 8-poly/0137.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007632972s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005863367s
     日志: puzzles/Zone1/logs/8-poly/0137.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [236] 处理: 8-poly/0144.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010993350s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009463051s
     日志: puzzles/Zone1/logs/8-poly/0144.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [237] 处理: 8-poly/0146.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .015599091s
+    [0;32m✓ 程序运行成功[0m - 耗时: .021814479s
     日志: puzzles/Zone1/logs/8-poly/0146.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [238] 处理: 8-poly/0147.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007616634s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007158420s
     日志: puzzles/Zone1/logs/8-poly/0147.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [239] 处理: 8-poly/0148.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007306187s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006941498s
     日志: puzzles/Zone1/logs/8-poly/0148.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [240] 处理: 8-poly/0149.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008508992s
+    [0;32m✓ 程序运行成功[0m - 耗时: .010858054s
     日志: puzzles/Zone1/logs/8-poly/0149.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [241] 处理: 8-poly/0150.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007524762s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006890291s
     日志: puzzles/Zone1/logs/8-poly/0150.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [242] 处理: 8-poly/0151.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009225574s
+    [0;32m✓ 程序运行成功[0m - 耗时: .009105880s
     日志: puzzles/Zone1/logs/8-poly/0151.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [243] 处理: 8-poly/0153.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: 4.350990628s
+    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.003171754s
     日志: puzzles/Zone1/logs/8-poly/0153.log
-    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [244] 处理: 8-poly/0175.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007823124s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007298009s
     日志: puzzles/Zone1/logs/8-poly/0175.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [245] 处理: 8-poly/0200.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009119653s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006612250s
     日志: puzzles/Zone1/logs/8-poly/0200.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [246] 处理: 8-poly/0361.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .132569220s
+    [0;32m✓ 程序运行成功[0m - 耗时: .384111945s
     日志: puzzles/Zone1/logs/8-poly/0361.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [247] 处理: 8-poly/0363.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006471625s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007539649s
     日志: puzzles/Zone1/logs/8-poly/0363.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [248] 处理: 8-poly/0364.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010237976s
+    [0;32m✓ 程序运行成功[0m - 耗时: .010943506s
     日志: puzzles/Zone1/logs/8-poly/0364.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [249] 处理: 8-poly/0365.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007722844s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007129745s
     日志: puzzles/Zone1/logs/8-poly/0365.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [250] 处理: 8-poly/0366.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .011571466s
+    [0;32m✓ 程序运行成功[0m - 耗时: .012159282s
     日志: puzzles/Zone1/logs/8-poly/0366.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [251] 处理: 8-poly/0368.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .014947184s
+    [0;32m✓ 程序运行成功[0m - 耗时: .019532735s
     日志: puzzles/Zone1/logs/8-poly/0368.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [252] 处理: 8-poly/0371.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010975716s
+    [0;32m✓ 程序运行成功[0m - 耗时: .012408572s
     日志: puzzles/Zone1/logs/8-poly/0371.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [253] 处理: 8-poly/0379.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .005777418s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006593133s
     日志: puzzles/Zone1/logs/8-poly/0379.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [254] 处理: 8-poly/0380.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006197301s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007249122s
     日志: puzzles/Zone1/logs/8-poly/0380.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [255] 处理: 8-poly/0392.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006623294s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006324869s
     日志: puzzles/Zone1/logs/8-poly/0392.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [256] 处理: 8-poly/1040.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007162381s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006762684s
     日志: puzzles/Zone1/logs/8-poly/1040.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [257] 处理: 8-poly/1042.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007293204s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006928679s
     日志: puzzles/Zone1/logs/8-poly/1042.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [258] 处理: 8-poly/1043.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007372100s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007010161s
     日志: puzzles/Zone1/logs/8-poly/1043.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [259] 处理: 8-poly/1046.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007161129s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006525625s
     日志: puzzles/Zone1/logs/8-poly/1046.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [260] 处理: 8-poly/1048.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008278135s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008481817s
     日志: puzzles/Zone1/logs/8-poly/1048.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [261] 处理: 8-poly/1049.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010244202s
+    [0;32m✓ 程序运行成功[0m - 耗时: .011105070s
     日志: puzzles/Zone1/logs/8-poly/1049.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [262] 处理: 8-poly/1051.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007876231s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007208253s
     日志: puzzles/Zone1/logs/8-poly/1051.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [263] 处理: 8-poly/1053.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007560596s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007492393s
     日志: puzzles/Zone1/logs/8-poly/1053.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [264] 处理: 8-poly/1054.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006485807s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006779779s
     日志: puzzles/Zone1/logs/8-poly/1054.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [265] 处理: 8-poly/1057.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006820609s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006420431s
     日志: puzzles/Zone1/logs/8-poly/1057.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [266] 处理: 8-poly/1058.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008586330s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007763153s
     日志: puzzles/Zone1/logs/8-poly/1058.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [267] 处理: 8-poly/1245.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .020861984s
+    [0;32m✓ 程序运行成功[0m - 耗时: .118007250s
     日志: puzzles/Zone1/logs/8-poly/1245.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [268] 处理: 8-poly/1423.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006944383s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007478138s
     日志: puzzles/Zone1/logs/8-poly/1423.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [269] 处理: 9-region-size-x/0030.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .785853077s
+    [0;32m✓ 程序运行成功[0m - 耗时: .092080376s
     日志: puzzles/Zone1/logs/9-region-size-x/0030.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [270] 处理: 9-region-size-x/0070.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007082326s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006603480s
     日志: puzzles/Zone1/logs/9-region-size-x/0070.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [271] 处理: 9-region-size-x/0075.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008268712s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007441305s
     日志: puzzles/Zone1/logs/9-region-size-x/0075.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [272] 处理: 9-region-size-x/0092.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007228307s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006511818s
     日志: puzzles/Zone1/logs/9-region-size-x/0092.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [273] 处理: 9-region-size-x/0093.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008869848s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007030343s
     日志: puzzles/Zone1/logs/9-region-size-x/0093.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [274] 处理: 9-region-size-x/0098.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006794655s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006666213s
     日志: puzzles/Zone1/logs/9-region-size-x/0098.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [275] 处理: 9-region-size-x/0110.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .463237360s
+    [0;32m✓ 程序运行成功[0m - 耗时: .011363081s
     日志: puzzles/Zone1/logs/9-region-size-x/0110.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [276] 处理: 9-region-size-x/0112.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007339816s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006654969s
     日志: puzzles/Zone1/logs/9-region-size-x/0112.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [277] 处理: 9-region-size-x/0116.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.632563093s
+    [0;32m✓ 程序运行成功[0m - 耗时: .068205540s
     日志: puzzles/Zone1/logs/9-region-size-x/0116.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [278] 处理: 9-region-size-x/0118.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007222421s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006601751s
     日志: puzzles/Zone1/logs/9-region-size-x/0118.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [279] 处理: 9-region-size-x/0119.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006511885s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006013674s
     日志: puzzles/Zone1/logs/9-region-size-x/0119.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [280] 处理: 9-region-size-x/0121.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007631747s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007006387s
     日志: puzzles/Zone1/logs/9-region-size-x/0121.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [281] 处理: 9-region-size-x/0122.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007318365s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006478724s
     日志: puzzles/Zone1/logs/9-region-size-x/0122.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [282] 处理: 9-region-size-x/0130.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .125132919s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007812867s
     日志: puzzles/Zone1/logs/9-region-size-x/0130.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [283] 处理: 9-region-size-x/0138.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009158826s
+    [0;32m✓ 程序运行成功[0m - 耗时: .008585989s
     日志: puzzles/Zone1/logs/9-region-size-x/0138.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [284] 处理: 9-region-size-x/0140.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .025559014s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007185156s
     日志: puzzles/Zone1/logs/9-region-size-x/0140.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [285] 处理: 9-region-size-x/0156.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .018281182s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006926513s
     日志: puzzles/Zone1/logs/9-region-size-x/0156.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [286] 处理: 9-region-size-x/0184.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .493048084s
+    [0;32m✓ 程序运行成功[0m - 耗时: .168453823s
     日志: puzzles/Zone1/logs/9-region-size-x/0184.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [287] 处理: 9-region-size-x/0199.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.448953202s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006298360s
     日志: puzzles/Zone1/logs/9-region-size-x/0199.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [288] 处理: 9-region-size-x/0243.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .013681527s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007540357s
     日志: puzzles/Zone1/logs/9-region-size-x/0243.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [289] 处理: 9-region-size-x/0244.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008652277s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006555876s
     日志: puzzles/Zone1/logs/9-region-size-x/0244.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [290] 处理: 9-region-size-x/0245.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007608316s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006963761s
     日志: puzzles/Zone1/logs/9-region-size-x/0245.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [291] 处理: 9-region-size-x/0246.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .227269802s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007682897s
     日志: puzzles/Zone1/logs/9-region-size-x/0246.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [292] 处理: 9-region-size-x/0255.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .037989321s
+    [0;32m✓ 程序运行成功[0m - 耗时: .034343332s
     日志: puzzles/Zone1/logs/9-region-size-x/0255.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [293] 处理: 9-region-size-x/0257.puz
-    [0;31m✗ 超时终止 - 运行时间超过10秒[0m - 耗时: 10.361643122s
+    [0;32m✓ 程序运行成功[0m - 耗时: .158548624s
     日志: puzzles/Zone1/logs/9-region-size-x/0257.log
+    [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [294] 处理: 9-region-size-x/0278.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008492235s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007561769s
     日志: puzzles/Zone1/logs/9-region-size-x/0278.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [295] 处理: 9-region-size-x/0781.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .049482674s
+    [0;32m✓ 程序运行成功[0m - 耗时: .044151165s
     日志: puzzles/Zone1/logs/9-region-size-x/0781.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [296] 处理: 9-region-size-x/0782.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .011233781s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005962008s
     日志: puzzles/Zone1/logs/9-region-size-x/0782.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [297] 处理: 9-region-size-x/1127.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008642892s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007405935s
     日志: puzzles/Zone1/logs/9-region-size-x/1127.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [298] 处理: 9-region-size-x/1128.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .015031819s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006030738s
     日志: puzzles/Zone1/logs/9-region-size-x/1128.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [299] 处理: 9-region-size-x/1235.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009271787s
+    [0;32m✓ 程序运行成功[0m - 耗时: .015243951s
     日志: puzzles/Zone1/logs/9-region-size-x/1235.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [300] 处理: 9-region-size-x/1242.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .015400500s
+    [0;32m✓ 程序运行成功[0m - 耗时: .007362820s
     日志: puzzles/Zone1/logs/9-region-size-x/1242.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [301] 处理: 9-region-size-x/1416.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007946523s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006373128s
     日志: puzzles/Zone1/logs/9-region-size-x/1416.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [302] 处理: 9-region-size-x/1417.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008043713s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005990811s
     日志: puzzles/Zone1/logs/9-region-size-x/1417.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [303] 处理: 9-region-size-x/1418.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006358880s
+    [0;32m✓ 程序运行成功[0m - 耗时: .005647073s
     日志: puzzles/Zone1/logs/9-region-size-x/1418.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [304] 处理: 9-region-size-x/1419.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .010125315s
+    [0;32m✓ 程序运行成功[0m - 耗时: .010678888s
     日志: puzzles/Zone1/logs/9-region-size-x/1419.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [305] 处理: 9-region-size-x/1420.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .012624808s
+    [0;32m✓ 程序运行成功[0m - 耗时: .015096046s
     日志: puzzles/Zone1/logs/9-region-size-x/1420.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [306] 处理: 9-region-size-x/1421b.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .012996442s
+    [0;32m✓ 程序运行成功[0m - 耗时: .013235693s
     日志: puzzles/Zone1/logs/9-region-size-x/1421b.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [307] 处理: 9-region-size-x/1422.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .006958358s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006562398s
     日志: puzzles/Zone1/logs/9-region-size-x/1422.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [308] 处理: 9-region-size-x/1431.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .007547726s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006626317s
     日志: puzzles/Zone1/logs/9-region-size-x/1431.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [309] 处理: 9-region-size-x/1440.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .008363392s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006740423s
     日志: puzzles/Zone1/logs/9-region-size-x/1440.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [310] 处理: 9-region-size-x/1441b.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .021879516s
+    [0;32m✓ 程序运行成功[0m - 耗时: .030927460s
     日志: puzzles/Zone1/logs/9-region-size-x/1441b.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [311] 处理: 9-region-size-x/1442.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .009634885s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006431022s
     日志: puzzles/Zone1/logs/9-region-size-x/1442.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 [312] 处理: 9-region-size-x/1443.puz
-    [0;32m✓ 程序运行成功[0m - 耗时: .029452598s
+    [0;32m✓ 程序运行成功[0m - 耗时: .006876410s
     日志: puzzles/Zone1/logs/9-region-size-x/1443.log
     [0;32m✓✓ 答案正确 - 与标准答案一致[0m
 ----------------------------------------
 批量处理完成!
-总计: 312 | [0;32m成功: 290[0m | [0;31m失败: 22[0m
-总耗时: 274.300314721s
+总计: 312 | [0;32m成功: 299[0m | [0;31m失败: 13[0m
+总耗时: 170.471327195s
 所有日志保存在: puzzles/Zone1/logs

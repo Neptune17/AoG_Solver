@@ -8,13 +8,13 @@ Automatically search for puzzle answers for game "The Artisan of Glimmith".
 
 - Current Status on Official Puzzles (time 10s+ marked as fail)
 
-    - Total: 912 / 1231
+    - Total: 963 / 1231
 
-        - Zone1: 290 / 312
+        - Zone1: 299 / 312
 
-        - Zone2: 358 / 438
+        - Zone2: 374 / 438
 
-        - Zone3: 264 / 481
+        - Zone3: 290 / 481
 
 ## Example (single run)
 
