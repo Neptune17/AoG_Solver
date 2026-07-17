@@ -3,19 +3,7 @@
 // ------------------------------------------------------------
 // Global puzzle configuration flags
 // ------------------------------------------------------------
-bool puzzle_only_rectangles = false;
-bool puzzle_no_rectangles = false;
-bool puzzle_adjacent_shapes_different = false;
-bool puzzle_adjacent_sizes_different = false;
-bool puzzle_all_shapes_different = false;
-bool puzzle_all_shapes_same = false;
-bool puzzle_one_symbol_per_region = false;
-bool puzzle_predefine_shapes_only = false;
-bool puzzle_no_4_way_intersections = false;
-bool puzzle_no_3_way_intersections = false;
-
-int puzzle_shape_size_lower_bound = -1;
-int puzzle_shape_size_upper_bound = -1;
+PuzzleConfig config;
 
 // ------------------------------------------------------------
 // Puzzle grid state

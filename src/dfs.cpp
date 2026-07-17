@@ -4,6 +4,7 @@
 #include "checks.h"
 
 #include <cstring>
+#include <optional>
 #include <set>
 #include <map>
 #include <vector>
@@ -11,22 +12,14 @@
 #include <iostream>
 
 // ------------------------------------------------------------
-// DFS state (global to avoid repeated allocation)
+// DFS state (single struct instance)
 // ------------------------------------------------------------
-int dfs_visited[MAX_PUZZLE_SIZE][MAX_PUZZLE_SIZE];
-int dfs_visited_index = 0;
-int dfs_empty_count = 0;
-std::set<std::pair<Node, Node>> dfs_empty_block_line_node_pair;
-int dfs_empty_block_line_count = 0;
-int dfs_symbol_count = 0;
-int dfs_slash_count[10];
-std::vector<Node> dfs_compass_nodes;
-std::vector<CompassStates> dfs_compass_node_states;
-std::vector<int> dfs_area_shape_sizes;
+DFSContext dfs_ctx;
 
-int dfs_group_mark_index = 0;
-
-std::map<Node, int> place_visited;
+// Encode Node{x, y} into a single uint64_t for fast hashing
+inline uint64_t encode_node(int x, int y) {
+    return (static_cast<uint64_t>(static_cast<uint32_t>(x)) << 32) | static_cast<uint32_t>(y);
+}
 
 // ------------------------------------------------------------
 // dfs_empty - DFS over empty areas
@@ -42,51 +35,51 @@ void dfs_empty(int x, int y, uint32_t** solve_puzzle) {
     if (solve_puzzle[puzzle_x][puzzle_y] != AREA_NORMAL) {
         return;
     }
-    if (dfs_visited[puzzle_x][puzzle_y] == dfs_visited_index) {
+    if (dfs_ctx.visited[puzzle_x][puzzle_y] == dfs_ctx.visited_index) {
         return;
     }
 
-    dfs_visited[puzzle_x][puzzle_y] = dfs_visited_index;
+    dfs_ctx.visited[puzzle_x][puzzle_y] = dfs_ctx.visited_index;
 
-    dfs_empty_count += 1;
+    dfs_ctx.empty_count += 1;
 
     // if there is a block line between connected empty areas.
     bool block_line_flag = false;
-    if ((puzzle[puzzle_x - 1][puzzle_y] & LINE_BLOCK) && (dfs_visited[puzzle_x - 2][puzzle_y] == dfs_visited_index)) {
-        dfs_empty_block_line_node_pair.insert(std::make_pair(Node(x - 1, y), Node(x, y)));
+    if ((puzzle[puzzle_x - 1][puzzle_y] & LINE_BLOCK) && (dfs_ctx.visited[puzzle_x - 2][puzzle_y] == dfs_ctx.visited_index)) {
+        dfs_ctx.empty_block_line_node_pairs.insert(std::make_pair(Node(x - 1, y), Node(x, y)));
         block_line_flag = true;
     }
-    if ((puzzle[puzzle_x + 1][puzzle_y] & LINE_BLOCK) && (dfs_visited[puzzle_x + 2][puzzle_y] == dfs_visited_index)) {
-        dfs_empty_block_line_node_pair.insert(std::make_pair(Node(x + 1, y), Node(x, y)));
+    if ((puzzle[puzzle_x + 1][puzzle_y] & LINE_BLOCK) && (dfs_ctx.visited[puzzle_x + 2][puzzle_y] == dfs_ctx.visited_index)) {
+        dfs_ctx.empty_block_line_node_pairs.insert(std::make_pair(Node(x + 1, y), Node(x, y)));
         block_line_flag = true;
     }
-    if ((puzzle[puzzle_x][puzzle_y - 1] & LINE_BLOCK) && (dfs_visited[puzzle_x][puzzle_y - 2] == dfs_visited_index)) {
-        dfs_empty_block_line_node_pair.insert(std::make_pair(Node(x, y), Node(x, y - 1)));
+    if ((puzzle[puzzle_x][puzzle_y - 1] & LINE_BLOCK) && (dfs_ctx.visited[puzzle_x][puzzle_y - 2] == dfs_ctx.visited_index)) {
+        dfs_ctx.empty_block_line_node_pairs.insert(std::make_pair(Node(x, y), Node(x, y - 1)));
         block_line_flag = true;
     }
-    if ((puzzle[puzzle_x][puzzle_y + 1] & LINE_BLOCK) && (dfs_visited[puzzle_x][puzzle_y + 2] == dfs_visited_index)) {
-        dfs_empty_block_line_node_pair.insert(std::make_pair(Node(x, y), Node(x, y + 1)));
+    if ((puzzle[puzzle_x][puzzle_y + 1] & LINE_BLOCK) && (dfs_ctx.visited[puzzle_x][puzzle_y + 2] == dfs_ctx.visited_index)) {
+        dfs_ctx.empty_block_line_node_pairs.insert(std::make_pair(Node(x, y), Node(x, y + 1)));
         block_line_flag = true;
     }
     if (block_line_flag) {
-        dfs_empty_block_line_count += 1;
+        dfs_ctx.empty_block_line_count += 1;
     }
 
     if (area_contain_symbol(x, y)) {
-        dfs_symbol_count += 1;
+        dfs_ctx.symbol_count += 1;
     }
 
     if (puzzle[puzzle_x][puzzle_y] & AREA_SLASH_INDEX_BIT) {
-        dfs_slash_count[puzzle[puzzle_x][puzzle_y] >> AREA_SLASH_INDEX_BIT_SHIFT] += 1;
+        dfs_ctx.slash_count[puzzle[puzzle_x][puzzle_y] >> AREA_SLASH_INDEX_BIT_SHIFT] += 1;
     }
 
     if (puzzle[puzzle_x][puzzle_y] & AREA_SHAPE_SIZE_BIT) {
-        dfs_area_shape_sizes.push_back((puzzle[puzzle_x][puzzle_y] & AREA_SHAPE_SIZE_BIT) >> AREA_SHAPE_SIZE_BIT_SHIFT);
+        dfs_ctx.area_shape_sizes.push_back((puzzle[puzzle_x][puzzle_y] & AREA_SHAPE_SIZE_BIT) >> AREA_SHAPE_SIZE_BIT_SHIFT);
     }
 
     if (puzzle[puzzle_x][puzzle_y] & AREA_COMPASS_ENABLE) {
-        dfs_compass_nodes.push_back(Node(x, y));
-        dfs_compass_node_states.push_back(CompassStates(0, 0, 0, 0));
+        dfs_ctx.compass_nodes.push_back(Node(x, y));
+        dfs_ctx.compass_node_states.push_back(CompassStates(0, 0, 0, 0));
     }
 
     if ((puzzle[puzzle_x - 1][puzzle_y] & LINE_BLOCK) == 0) {
@@ -117,17 +110,17 @@ void dfs_empty_compass(int x, int y, uint32_t** solve_puzzle) {
     if (solve_puzzle[puzzle_x][puzzle_y] != AREA_NORMAL) {
         return;
     }
-    if (dfs_visited[puzzle_x][puzzle_y] == dfs_visited_index) {
+    if (dfs_ctx.visited[puzzle_x][puzzle_y] == dfs_ctx.visited_index) {
         return;
     }
 
-    dfs_visited[puzzle_x][puzzle_y] = dfs_visited_index;
+    dfs_ctx.visited[puzzle_x][puzzle_y] = dfs_ctx.visited_index;
 
-    for (int i = 0; i < (int)dfs_compass_nodes.size(); ++i) {
-        if (x < dfs_compass_nodes[i].x) dfs_compass_node_states[i].up++;
-        if (x > dfs_compass_nodes[i].x) dfs_compass_node_states[i].down++;
-        if (y < dfs_compass_nodes[i].y) dfs_compass_node_states[i].left++;
-        if (y > dfs_compass_nodes[i].y) dfs_compass_node_states[i].right++;
+    for (int i = 0; i < (int)dfs_ctx.compass_nodes.size(); ++i) {
+        if (x < dfs_ctx.compass_nodes[i].x) dfs_ctx.compass_node_states[i].up++;
+        if (x > dfs_ctx.compass_nodes[i].x) dfs_ctx.compass_node_states[i].down++;
+        if (y < dfs_ctx.compass_nodes[i].y) dfs_ctx.compass_node_states[i].left++;
+        if (y > dfs_ctx.compass_nodes[i].y) dfs_ctx.compass_node_states[i].right++;
     }
 
     if ((puzzle[puzzle_x - 1][puzzle_y] & LINE_BLOCK) == 0) {
@@ -149,22 +142,22 @@ void dfs_empty_compass(int x, int y, uint32_t** solve_puzzle) {
 // ------------------------------------------------------------
 bool DFS_empty_compass_check(int x, int y, uint32_t** solve_puzzle) {
 
-    dfs_visited_index += 1;
+    dfs_ctx.visited_index += 1;
     dfs_empty_compass(x, y, solve_puzzle);
 
-    for (int i = 0; i < (int)dfs_compass_nodes.size(); ++i) {
-        int puzzle_x = to_puzzle_x(dfs_compass_nodes[i].x);
-        int puzzle_y = to_puzzle_y(dfs_compass_nodes[i].y);
-        if ((puzzle_compass_up[puzzle_x][puzzle_y] != -1) && (puzzle_compass_up[puzzle_x][puzzle_y] > dfs_compass_node_states[i].up)) {
+    for (int i = 0; i < (int)dfs_ctx.compass_nodes.size(); ++i) {
+        int puzzle_x = to_puzzle_x(dfs_ctx.compass_nodes[i].x);
+        int puzzle_y = to_puzzle_y(dfs_ctx.compass_nodes[i].y);
+        if ((puzzle_compass_up[puzzle_x][puzzle_y] != -1) && (puzzle_compass_up[puzzle_x][puzzle_y] > dfs_ctx.compass_node_states[i].up)) {
             return false;
         }
-        if ((puzzle_compass_down[puzzle_x][puzzle_y] != -1) && (puzzle_compass_down[puzzle_x][puzzle_y] > dfs_compass_node_states[i].down)) {
+        if ((puzzle_compass_down[puzzle_x][puzzle_y] != -1) && (puzzle_compass_down[puzzle_x][puzzle_y] > dfs_ctx.compass_node_states[i].down)) {
             return false;
         }
-        if ((puzzle_compass_left[puzzle_x][puzzle_y] != -1) && (puzzle_compass_left[puzzle_x][puzzle_y] > dfs_compass_node_states[i].left)) {
+        if ((puzzle_compass_left[puzzle_x][puzzle_y] != -1) && (puzzle_compass_left[puzzle_x][puzzle_y] > dfs_ctx.compass_node_states[i].left)) {
             return false;
         }
-        if ((puzzle_compass_right[puzzle_x][puzzle_y] != -1) && (puzzle_compass_right[puzzle_x][puzzle_y] > dfs_compass_node_states[i].right)) {
+        if ((puzzle_compass_right[puzzle_x][puzzle_y] != -1) && (puzzle_compass_right[puzzle_x][puzzle_y] > dfs_ctx.compass_node_states[i].right)) {
             return false;
         }
     }
@@ -176,18 +169,18 @@ bool DFS_empty_compass_check(int x, int y, uint32_t** solve_puzzle) {
 // try_place_id - bipartite partition helper
 // ------------------------------------------------------------
 int try_place_id(int x, int y, bool value, int visited_value) {
-    if (place_visited.find(Node(x, y)) == place_visited.end()) {
-        place_visited[Node(x, y)] = 0;
+    if (dfs_ctx.place_visited.find(encode_node(x, y)) == dfs_ctx.place_visited.end()) {
+        dfs_ctx.place_visited[encode_node(x, y)] = 0;
     }
 
-    if (place_visited[Node(x, y)] == visited_value) {
+    if (dfs_ctx.place_visited[encode_node(x, y)] == visited_value) {
         return 0;
     }
 
-    place_visited[Node(x, y)] = visited_value;
+    dfs_ctx.place_visited[encode_node(x, y)] = visited_value;
     int count = value;
 
-    for (auto pair : dfs_empty_block_line_node_pair) {
+    for (auto pair : dfs_ctx.empty_block_line_node_pairs) {
         if (pair.first == Node(x, y)) {
             count += try_place_id(pair.second.x, pair.second.y, !value, visited_value);
         }
@@ -203,27 +196,27 @@ int try_place_id(int x, int y, bool value, int visited_value) {
 // DFS_empty - high-level empty area analysis
 // ------------------------------------------------------------
 void DFS_empty(int x, int y, uint32_t** solve_puzzle) {
-    dfs_empty_count = 0;
-    dfs_empty_block_line_count = 0;
-    dfs_empty_block_line_node_pair.clear();
-    dfs_symbol_count = 0;
-    memset(dfs_slash_count, 0, sizeof(dfs_slash_count));
-    dfs_compass_nodes.clear();
-    dfs_compass_node_states.clear();
-    dfs_area_shape_sizes.clear();
+    dfs_ctx.empty_count = 0;
+    dfs_ctx.empty_block_line_count = 0;
+    dfs_ctx.empty_block_line_node_pairs.clear();
+    dfs_ctx.symbol_count = 0;
+    memset(dfs_ctx.slash_count, 0, sizeof(dfs_ctx.slash_count));
+    dfs_ctx.compass_nodes.clear();
+    dfs_ctx.compass_node_states.clear();
+    dfs_ctx.area_shape_sizes.clear();
 
-    dfs_visited_index += 1;
+    dfs_ctx.visited_index += 1;
     dfs_empty(x, y, solve_puzzle);
 
-    place_visited.clear();
-    dfs_empty_block_line_count = 0;
-    for (auto pair : dfs_empty_block_line_node_pair) {
-        if (place_visited.find(pair.first) == place_visited.end()) {
-            dfs_empty_block_line_count += std::min(try_place_id(pair.first.x, pair.first.y, 0, 1),
+    dfs_ctx.place_visited.clear();
+    dfs_ctx.empty_block_line_count = 0;
+    for (auto pair : dfs_ctx.empty_block_line_node_pairs) {
+        if (dfs_ctx.place_visited.find(encode_node(pair.first.x, pair.first.y)) == dfs_ctx.place_visited.end()) {
+            dfs_ctx.empty_block_line_count += std::min(try_place_id(pair.first.x, pair.first.y, 0, 1),
                                                    try_place_id(pair.first.x, pair.first.y, 1, 2));
         }
-        if (place_visited.find(pair.second) == place_visited.end()) {
-            dfs_empty_block_line_count += std::min(try_place_id(pair.second.x, pair.second.y, 0, 1),
+        if (dfs_ctx.place_visited.find(encode_node(pair.second.x, pair.second.y)) == dfs_ctx.place_visited.end()) {
+            dfs_ctx.empty_block_line_count += std::min(try_place_id(pair.second.x, pair.second.y, 0, 1),
                                                    try_place_id(pair.second.x, pair.second.y, 1, 2));
         }
     }
@@ -233,13 +226,13 @@ void DFS_empty(int x, int y, uint32_t** solve_puzzle) {
 // Group mark helpers
 // ------------------------------------------------------------
 void DFS_group_mark() {
-    dfs_group_mark_index = dfs_visited_index;
+    dfs_ctx.group_mark_index = dfs_ctx.visited_index;
 }
 
 bool DFS_in_group_mark(int x, int y, uint32_t** /*solve_puzzle*/) {
     int puzzle_x = to_puzzle_x(x);
     int puzzle_y = to_puzzle_y(y);
-    return dfs_visited[puzzle_x][puzzle_y] > dfs_group_mark_index;
+    return dfs_ctx.visited[puzzle_x][puzzle_y] > dfs_ctx.group_mark_index;
 }
 
 // ------------------------------------------------------------
@@ -254,62 +247,62 @@ bool empty_area_check(uint32_t** solve_puzzle) {
                 !DFS_in_group_mark(x, y, solve_puzzle)) {
                 DFS_empty(x, y, solve_puzzle);
 
-                int max_area_size = dfs_empty_count - dfs_empty_block_line_count;
-                if (max_area_size < puzzle_shape_size_lower_bound) {
+                int max_area_size = dfs_ctx.empty_count - dfs_ctx.empty_block_line_count;
+                if (max_area_size < config.shape_size_lower_bound) {
                     return false;
                 }
 
                 std::set<int> unique_val_set;
                 int area_shape_sizes_required_size = 0;
-                for (int val : dfs_area_shape_sizes) {
+                for (int val : dfs_ctx.area_shape_sizes) {
                     if (unique_val_set.insert(val).second) {
                         area_shape_sizes_required_size += val;
                     }
                 }
-                if (area_shape_sizes_required_size > dfs_empty_count) {
+                if (area_shape_sizes_required_size > dfs_ctx.empty_count) {
                     return false;
                 }
 
-                if (puzzle_one_symbol_per_region) {
-                    if (dfs_symbol_count == 0) {
+                if (config.one_symbol_per_region) {
+                    if (dfs_ctx.symbol_count == 0) {
                         return false;
                     }
-                    if ((dfs_symbol_count == 1) && (dfs_empty_block_line_count != 0)) {
+                    if ((dfs_ctx.symbol_count == 1) && (dfs_ctx.empty_block_line_count != 0)) {
                         return false;
                     }
                 }
 
                 if (slash_check_enable) {
                     for (int i = 1; i <= slash_check_slash_cnt; ++i) {
-                        if (dfs_slash_count[i] != dfs_slash_count[1]) {
+                        if (dfs_ctx.slash_count[i] != dfs_ctx.slash_count[1]) {
                             return false;
                         }
                     }
-                    if (dfs_slash_count[1] == 0) {
+                    if (dfs_ctx.slash_count[1] == 0) {
                         return false;
                     }
-                    if ((dfs_slash_count[1] == 1) && (dfs_empty_block_line_count != 0)) {
-                        return false;
-                    }
-                }
-
-                if (puzzle_shape_size_lower_bound == puzzle_shape_size_upper_bound) {
-                    if (dfs_empty_count % puzzle_shape_size_lower_bound != 0) {
-                        return false;
-                    }
-                    if ((dfs_empty_count == puzzle_shape_size_lower_bound) && (dfs_empty_block_line_count != 0)) {
+                    if ((dfs_ctx.slash_count[1] == 1) && (dfs_ctx.empty_block_line_count != 0)) {
                         return false;
                     }
                 }
 
-                if (puzzle_all_shapes_same && all_shapes_same_check_shape_index != -1) {
+                if (config.shape_size_lower_bound == config.shape_size_upper_bound) {
+                    if (dfs_ctx.empty_count % config.shape_size_lower_bound != 0) {
+                        return false;
+                    }
+                    if ((dfs_ctx.empty_count == config.shape_size_lower_bound) && (dfs_ctx.empty_block_line_count != 0)) {
+                        return false;
+                    }
+                }
+
+                if (config.all_shapes_same && all_shapes_same_check_shape_index != -1) {
                     int shape_size = shape_index_to_shape_size_map[all_shapes_same_check_shape_index];
-                    if (dfs_empty_count % shape_size != 0) {
+                    if (dfs_ctx.empty_count % shape_size != 0) {
                         return false;
                     }
                 }
 
-                if (dfs_compass_nodes.size() != 0) {
+                if (dfs_ctx.compass_nodes.size() != 0) {
                     if (!DFS_empty_compass_check(x, y, solve_puzzle)) {
                         return false;
                     }
@@ -357,24 +350,24 @@ bool empty_area_check(uint32_t** solve_puzzle) {
 // ------------------------------------------------------------
 int _empty_area_shape_count(int /*x*/, int /*y*/, uint32_t** /*solve_puzzle*/) {
 
-    if (dfs_empty_block_line_count != 0) {
+    if (dfs_ctx.empty_block_line_count != 0) {
         return 0;
     }
 
-    if (dfs_empty_count <= puzzle_shape_size_lower_bound) {
+    if (dfs_ctx.empty_count <= config.shape_size_lower_bound) {
         return 1;
     }
 
-    if ((dfs_area_shape_sizes.size() == 1) && (dfs_area_shape_sizes[0] == dfs_empty_count)) {
+    if ((dfs_ctx.area_shape_sizes.size() == 1) && (dfs_ctx.area_shape_sizes[0] == dfs_ctx.empty_count)) {
         return 1;
     }
 
-    if (puzzle_one_symbol_per_region && dfs_symbol_count == 1) {
+    if (config.one_symbol_per_region && dfs_ctx.symbol_count == 1) {
         return 1;
     }
 
     if (slash_check_enable) {
-        return dfs_slash_count[1];
+        return dfs_ctx.slash_count[1];
     }
 
     return 0;
@@ -387,11 +380,11 @@ std::tuple<int, int, int> empty_area_size_range(int x, int y, uint32_t** solve_p
 
     DFS_empty(x, y, solve_puzzle);
 
-    int shape_size_lower_bound = puzzle_shape_size_lower_bound;
-    int shape_size_upper_bound = puzzle_shape_size_upper_bound;
+    int shape_size_lower_bound = config.shape_size_lower_bound;
+    int shape_size_upper_bound = config.shape_size_upper_bound;
 
-    int max_area_size = dfs_empty_count - dfs_empty_block_line_count;
-    if (max_area_size < puzzle_shape_size_lower_bound) {
+    int max_area_size = dfs_ctx.empty_count - dfs_ctx.empty_block_line_count;
+    if (max_area_size < config.shape_size_lower_bound) {
         return std::make_tuple(-1, -1, -1);
     }
     shape_size_upper_bound = std::min(shape_size_upper_bound, max_area_size);
@@ -471,8 +464,8 @@ std::tuple<int, int, int> find_size_limit_small_area(uint32_t** solve_puzzle) {
                 !DFS_in_group_mark(x, y, solve_puzzle)) {
                 DFS_empty(x, y, solve_puzzle);
 
-                if (puzzle_shape_size_lower_bound == puzzle_shape_size_upper_bound &&
-                    (dfs_empty_count == puzzle_shape_size_lower_bound)) {
+                if (config.shape_size_lower_bound == config.shape_size_upper_bound &&
+                    (dfs_ctx.empty_count == config.shape_size_lower_bound)) {
                     return std::make_tuple(0, x, y);
                 }
             }
@@ -763,7 +756,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
     int compass_visited_right_cnt[MAX_SHAPE_SIZE];
     int compass_visited_cnt = 0;
 
-    Node symbol_loc = {-233, -666};
+    std::optional<Node> symbol_loc;
 
     int stack_size[MAX_SHAPE_SIZE];
     int stack_expand_distance_lb[MAX_SHAPE_SIZE];
@@ -772,6 +765,11 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
     int stack_candidates_i[MAX_SHAPE_SIZE];
     int stack_candidates_size[MAX_SHAPE_SIZE];
     int stack_top = 0;
+
+    // Reusable shape buffer (stack-allocated, no leak)
+    uint32_t _shape_buf[MAX_SHAPE_SIZE][MAX_SHAPE_SIZE];
+    uint32_t* temp_shape_ptr[MAX_SHAPE_SIZE];
+    for (int i = 0; i < MAX_SHAPE_SIZE; ++i) temp_shape_ptr[i] = _shape_buf[i];
 
     dfs_expand_candidates[dfs_expand_candidates_cnt] = {0, 0};
     dfs_expand_candidates_distance[dfs_expand_candidates_cnt] = 0;
@@ -823,9 +821,8 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 compass_visited_cnt--;
             }
 
-            if (puzzle_one_symbol_per_region && symbol_loc.x == temp_x && symbol_loc.y == temp_y) {
-                symbol_loc.x = -233;
-                symbol_loc.y = -666;
+            if (config.one_symbol_per_region && symbol_loc.has_value() && symbol_loc->x == temp_x && symbol_loc->y == temp_y) {
+                symbol_loc.reset();
             }
 
             for (int i = 0; i < compass_visited_cnt; ++i) {
@@ -848,7 +845,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 }
             }
             bool no_rectangle_check_fail_flag = false;
-            if (puzzle_no_rectangles) {
+            if (config.no_rectangles) {
                 int rectangle_width = dfs_rectangle_right[dfs_current_shape_cnt - 1] - dfs_rectangle_left[dfs_current_shape_cnt - 1] + 1;
                 int rectangle_height = dfs_rectangle_down[dfs_current_shape_cnt - 1] - dfs_rectangle_up[dfs_current_shape_cnt - 1] + 1;
                 if (rectangle_width * rectangle_height == (int)size) {
@@ -856,8 +853,8 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 }
             }
             bool one_symbol_per_region_check_fail_flag = false;
-            if (puzzle_one_symbol_per_region) {
-                if (symbol_loc.x == -233 && symbol_loc.y == -666) {
+            if (config.one_symbol_per_region) {
+                if (!symbol_loc.has_value()) {
                     one_symbol_per_region_check_fail_flag = true;
                 }
             }
@@ -866,13 +863,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 continue;
             }
 
-            uint32_t** temp_shape = new uint32_t*[100];
-            for (int i = 0; i < 100; ++i) {
-                temp_shape[i] = new uint32_t[100];
-                for (int j = 0; j < 100; ++j) {
-                    temp_shape[i][j] = 0;
-                }
-            }
+            memset(_shape_buf, 0, sizeof(_shape_buf));
             int start_x = 1000, start_y = 1000;
             int shape_size = 0;
             for (int i = 0; i < current_size; ++i) {
@@ -882,32 +873,25 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             for (int i = 0; i < current_size; ++i) {
                 int sx = dfs_current_shape[i].x - start_x;
                 int sy = dfs_current_shape[i].y - start_y;
-                temp_shape[sx][sy] = 1;
+                temp_shape_ptr[sx][sy] = 1;
                 shape_size = std::max(shape_size, std::max(sx, sy) + 1);
             }
 
-            uint32_t shape_index = shapes_search(temp_shape, shape_size);
+            uint32_t shape_index = shapes_search(temp_shape_ptr, shape_size);
             if (shape_index != 0xffffffffu) {
                 if (up_left_seq && (int)shape_index <= known_shape_index) {
-                    // clean up
-                    for (int i = 0; i < 100; ++i) delete[] temp_shape[i];
-                    delete[] temp_shape;
                     continue;
                 }
-                if (puzzle_all_shapes_different &&
+                if (config.all_shapes_different &&
                     all_shapes_different_check_shape_index_pool.find(shape_index) != all_shapes_different_check_shape_index_pool.end()) {
-                    for (int i = 0; i < 100; ++i) delete[] temp_shape[i];
-                    delete[] temp_shape;
                     continue;
                 }
             }
             else {
-                shapes_insert(temp_shape, shape_size);
-                shape_index = shapes_search(temp_shape, shape_size);
+                shapes_insert(temp_shape_ptr, shape_size);
+                shape_index = shapes_search(temp_shape_ptr, shape_size);
             }
 
-            for (int i = 0; i < 100; ++i) delete[] temp_shape[i];
-            delete[] temp_shape;
 
             for (int i = 0; i < current_size; ++i) {
                 solve_puzzle[((x + dfs_current_shape[i].x) << 1) + 1][((y + dfs_current_shape[i].y) << 1) + 1] |=
@@ -928,11 +912,11 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                     shape_check_fail_flag = true;
                     break;
                 }
-                if (puzzle_adjacent_shapes_different && !check_nearby_shape(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                if (config.adjacent_shapes_different && !check_nearby_shape(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
                     nearby_shape_check_fail_flag = true;
                     break;
                 }
-                if (puzzle_adjacent_sizes_different && !check_nearby_size(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                if (config.adjacent_sizes_different && !check_nearby_size(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
                     nearby_size_check_fail_flag = true;
                     break;
                 }
@@ -943,11 +927,11 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                         break;
                     }
                 }
-                if (puzzle_no_4_way_intersections && !check_tatami(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                if (config.no_4_way_intersections && !check_tatami(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
                     tatami_check_fail_flag = true;
                     break;
                 }
-                if (puzzle_no_3_way_intersections && !check_loopy(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                if (config.no_3_way_intersections && !check_loopy(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
                     loopy_check_fail_flag = true;
                     break;
                 }
@@ -1000,12 +984,12 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 ret = -1;
             }
             else {
-                if (puzzle_all_shapes_same) {
+                if (config.all_shapes_same) {
                     all_shapes_same_check_shape_index = shape_index;
                 }
                 all_shapes_different_check_shape_index_pool.insert(shape_index);
                 ret = DFS(index + 1, solve_puzzle);
-                if (puzzle_all_shapes_same) {
+                if (config.all_shapes_same) {
                     all_shapes_same_check_shape_index = -1;
                 }
             }
@@ -1057,14 +1041,14 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 }
                 if (!in_current_shape) {
                     DFS_empty(expand_x, expand_y, solve_puzzle);
-                    int max_area_size = dfs_empty_count - dfs_empty_block_line_count;
-                    if (max_area_size < puzzle_shape_size_lower_bound) {
+                    int max_area_size = dfs_ctx.empty_count - dfs_ctx.empty_block_line_count;
+                    if (max_area_size < config.shape_size_lower_bound) {
                         break;
                     }
                     if (slash_check_enable) {
                         bool check_flag = false;
                         for (int i = 1; i <= slash_check_slash_cnt; i++) {
-                            if (std::abs(dfs_slash_count[i] - dfs_slash_count[1]) > 1) {
+                            if (std::abs(dfs_ctx.slash_count[i] - dfs_ctx.slash_count[1]) > 1) {
                                 check_flag = true;
                             }
                         }
@@ -1104,7 +1088,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
 
             dfs_current_shape[dfs_current_shape_cnt].x = dfs_expand_candidates[candidates_i].x;
             dfs_current_shape[dfs_current_shape_cnt].y = dfs_expand_candidates[candidates_i].y;
-            if (puzzle_only_rectangles || puzzle_no_rectangles) {
+            if (config.only_rectangles || config.no_rectangles) {
                 if (dfs_current_shape_cnt == 0) {
                     dfs_rectangle_up[dfs_current_shape_cnt] = dfs_expand_candidates[candidates_i].x;
                     dfs_rectangle_down[dfs_current_shape_cnt] = dfs_expand_candidates[candidates_i].x;
@@ -1168,7 +1152,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             }
 
             bool rectangle_fail_flag = false;
-            if (puzzle_only_rectangles) {
+            if (config.only_rectangles) {
                 int rectangle_width = dfs_rectangle_right[dfs_current_shape_cnt - 1] - dfs_rectangle_left[dfs_current_shape_cnt - 1] + 1;
                 int rectangle_height = dfs_rectangle_down[dfs_current_shape_cnt - 1] - dfs_rectangle_up[dfs_current_shape_cnt - 1] + 1;
                 if (rectangle_width * rectangle_height > (int)size) {
@@ -1275,7 +1259,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 continue;
             }
 
-            if (puzzle_one_symbol_per_region) {
+            if (config.one_symbol_per_region) {
                 bool symbol_found = false;
                 if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_PALISADE_INDEX_BIT) symbol_found = true;
                 if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_SLASH_INDEX_BIT) symbol_found = true;
@@ -1283,8 +1267,8 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_SHAPE_SIZE_BIT) symbol_found = true;
                 if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_COMPASS_ENABLE) symbol_found = true;
                 if (symbol_found) {
-                    if (symbol_loc.x == -233 && symbol_loc.y == -666) {
-                        symbol_loc = {expand_x, expand_y};
+                    if (!symbol_loc.has_value()) {
+                        symbol_loc.emplace(expand_x, expand_y);
                     }
                     else {
                         mark_slash[slash_index] = false;
@@ -1387,8 +1371,8 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
 
     auto [range_check, shape_size_lower_bound, shape_size_upper_bound] = empty_area_size_range(x, y, solve_puzzle);
 
-    shape_size_lower_bound = std::max(shape_size_lower_bound, puzzle_shape_size_lower_bound);
-    shape_size_upper_bound = std::min(shape_size_upper_bound, puzzle_shape_size_upper_bound);
+    shape_size_lower_bound = std::max(shape_size_lower_bound, config.shape_size_lower_bound);
+    shape_size_upper_bound = std::min(shape_size_upper_bound, config.shape_size_upper_bound);
 
     for (int i = shape_size_lower_bound; i <= shape_size_upper_bound; ++i) {
         mark_size[i] = true;
@@ -1498,7 +1482,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
         }
 
         // Type 0 check: all shapes different
-        if (puzzle_all_shapes_different) {
+        if (config.all_shapes_different) {
             if (all_shapes_different_check_shape_index_pool.find(shapes[i].shape_index) != all_shapes_different_check_shape_index_pool.end()) {
                 ret_code |= RET_CODE_ALL_SHAPE_DIFFERENT;
                 continue;
@@ -1506,7 +1490,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
         }
 
         // Type 0 check: all shapes same
-        if (puzzle_all_shapes_same) {
+        if (config.all_shapes_same) {
             if ((all_shapes_same_check_shape_index != -1) && (shapes[i].shape_index != (uint32_t)all_shapes_same_check_shape_index)) {
                 ret_code |= RET_CODE_ALL_SHAPE_SAME;
                 continue;
@@ -1514,7 +1498,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
         }
 
         // Type 0 check: shape size range
-        if ((int)shapes[i].nodes.size() < puzzle_shape_size_lower_bound || (int)shapes[i].nodes.size() > puzzle_shape_size_upper_bound) {
+        if ((int)shapes[i].nodes.size() < config.shape_size_lower_bound || (int)shapes[i].nodes.size() > config.shape_size_upper_bound) {
             ret_code |= RET_CODE_SHAPE_SIZE_RANGE;
             continue;
         }
@@ -1604,7 +1588,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                 }
 
                 // Type 1 check: ONE_SYMBOL_PER_REGION
-                if (puzzle_one_symbol_per_region) {
+                if (config.one_symbol_per_region) {
                     if (area_contain_symbol(new_x, new_y)) {
                         if (one_symbol_per_region_check) {
                             ret_code |= RET_CODE_ONE_SYMBOL_PER_REGION;
@@ -1632,7 +1616,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
             }
 
             // Type 1 check: ONE_SYMBOL_PER_REGION
-            if (puzzle_one_symbol_per_region) {
+            if (config.one_symbol_per_region) {
                 if (!one_symbol_per_region_check) {
                     ret_code |= RET_CODE_ONE_SYMBOL_PER_REGION;
                 }
@@ -1692,12 +1676,12 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                     break;
                 }
 
-                if (puzzle_adjacent_shapes_different && !check_nearby_shape(puzzle_new_x, puzzle_new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                if (config.adjacent_shapes_different && !check_nearby_shape(puzzle_new_x, puzzle_new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
                     ret_code |= RET_CODE_ADJACENT_SHAPE_DIFFERENT;
                     break;
                 }
 
-                if (puzzle_adjacent_sizes_different && !check_nearby_size(puzzle_new_x, puzzle_new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                if (config.adjacent_sizes_different && !check_nearby_size(puzzle_new_x, puzzle_new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
                     ret_code |= RET_CODE_ADJACENT_SIZE_DIFFERENT;
                     break;
                 }
@@ -1735,14 +1719,14 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                     break;
                 }
 
-                if (puzzle_no_4_way_intersections) {
+                if (config.no_4_way_intersections) {
                     if (!check_tatami(new_puzzle_x, new_puzzle_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
                         ret_code |= RET_CODE_TATAMI;
                         break;
                     }
                 }
 
-                if (puzzle_no_3_way_intersections) {
+                if (config.no_3_way_intersections) {
                     if (!check_loopy(new_puzzle_x, new_puzzle_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
                         ret_code |= RET_CODE_LOOPY;
                         break;
@@ -1783,12 +1767,12 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
             // DFS
 
             bool first_shape_flag = false;
-            if (puzzle_all_shapes_same && all_shapes_same_check_shape_index == -1) {
+            if (config.all_shapes_same && all_shapes_same_check_shape_index == -1) {
                 all_shapes_same_check_shape_index = shapes[i].shape_index;
                 first_shape_flag = true;
             }
 
-            if (puzzle_all_shapes_different) {
+            if (config.all_shapes_different) {
                 all_shapes_different_check_shape_index_pool.insert(shapes[i].shape_index);
             }
 
@@ -1801,7 +1785,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                 all_shapes_same_check_shape_index = -1;
             }
 
-            if (puzzle_all_shapes_different) {
+            if (config.all_shapes_different) {
                 all_shapes_different_check_shape_index_pool.erase(shapes[i].shape_index);
             }
 
@@ -1817,8 +1801,8 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
 
     if (ret == SPECIAL_START_AREA_INDEX) return -1;
     if (ret == SPECIAL_START_LINE_SAME) return -1;
-    if (puzzle_predefine_shapes_only || puzzle_only_rectangles) return -1;
-    if (puzzle_all_shapes_same && all_shapes_same_check_shape_index != -1) return -1;
+    if (config.predefine_shapes_only || config.only_rectangles) return -1;
+    if (config.all_shapes_same && all_shapes_same_check_shape_index != -1) return -1;
 
     int known_shape_index = -1;
     if (!shapes.empty()) {

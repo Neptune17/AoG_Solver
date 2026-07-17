@@ -13,21 +13,23 @@
 #include "types.h"
 
 // ------------------------------------------------------------
-// Global puzzle configuration flags
+// Puzzle configuration (grouped to avoid global variable sprawl)
 // ------------------------------------------------------------
-extern bool puzzle_only_rectangles;
-extern bool puzzle_no_rectangles;
-extern bool puzzle_adjacent_shapes_different;
-extern bool puzzle_adjacent_sizes_different;
-extern bool puzzle_all_shapes_different;
-extern bool puzzle_all_shapes_same;
-extern bool puzzle_one_symbol_per_region;
-extern bool puzzle_predefine_shapes_only;
-extern bool puzzle_no_4_way_intersections;
-extern bool puzzle_no_3_way_intersections;
-
-extern int puzzle_shape_size_lower_bound;
-extern int puzzle_shape_size_upper_bound;
+struct PuzzleConfig {
+    bool only_rectangles          = false;
+    bool no_rectangles            = false;
+    bool adjacent_shapes_different = false;
+    bool adjacent_sizes_different  = false;
+    bool all_shapes_different     = false;
+    bool all_shapes_same          = false;
+    bool one_symbol_per_region    = false;
+    bool predefine_shapes_only    = false;
+    bool no_4_way_intersections   = false;
+    bool no_3_way_intersections   = false;
+    int  shape_size_lower_bound   = -1;
+    int  shape_size_upper_bound   = -1;
+};
+extern PuzzleConfig config;
 
 // ------------------------------------------------------------
 // Puzzle grid state

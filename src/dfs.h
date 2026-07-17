@@ -3,7 +3,34 @@
 
 #include <cstdint>
 #include <tuple>
+#include <vector>
+#include <set>
+#include <map>
+#include <unordered_map>
 #include "defines.h"
+#include "types.h"
+
+// ------------------------------------------------------------
+// DFS state (grouped to reduce global variable sprawl)
+// ------------------------------------------------------------
+struct DFSContext {
+    int  visited[MAX_PUZZLE_SIZE][MAX_PUZZLE_SIZE] = {};
+    int  visited_index = 0;
+    int  empty_count = 0;
+    std::set<std::pair<Node, Node>> empty_block_line_node_pairs;
+    int  empty_block_line_count = 0;
+    int  symbol_count = 0;
+    int  slash_count[10] = {};
+    std::vector<Node> compass_nodes;
+    std::vector<CompassStates> compass_node_states;
+    std::vector<int> area_shape_sizes;
+
+    int  group_mark_index = 0;
+
+    // place_visited: encode Node{x,y} as uint64_t for O(1) hash lookup
+    std::unordered_map<uint64_t, int> place_visited;
+};
+extern DFSContext dfs_ctx;
 
 // ------------------------------------------------------------
 // DFS entry points

@@ -28,56 +28,56 @@ int main() {
         }
         if (line.find("SHAPE_BANK") != std::string::npos) {
             std::getline(std::cin, line);
-            puzzle_predefine_shapes_only = true;
+            config.predefine_shapes_only = true;
             continue;
         }
         if (line.find("ADJACENT_SHAPES_DIFFERENT") != std::string::npos) {
-            puzzle_adjacent_shapes_different = true;
+            config.adjacent_shapes_different = true;
             continue;
         }
         if (line.find("ADJACENT_SIZES_DIFFERENT") != std::string::npos) {
-            puzzle_adjacent_sizes_different = true;
+            config.adjacent_sizes_different = true;
             continue;
         }
         if (line.find("ALL_SHAPES_DIFFERENT") != std::string::npos) {
-            puzzle_all_shapes_different = true;
+            config.all_shapes_different = true;
             continue;
         }
         if (line.find("ONLY_RECTANGLES") != std::string::npos) {
-            puzzle_only_rectangles = true;
+            config.only_rectangles = true;
             continue;
         }
         if (line.find("NO_RECTANGLES") != std::string::npos) {
-            puzzle_no_rectangles = true;
+            config.no_rectangles = true;
             continue;
         }
         if (line.find("ONE_SYMBOL_PER_REGION") != std::string::npos) {
-            puzzle_one_symbol_per_region = true;
+            config.one_symbol_per_region = true;
             continue;
         }
         if (line.find("ALL_SHAPES_SAME") != std::string::npos) {
-            puzzle_all_shapes_same = true;
+            config.all_shapes_same = true;
             continue;
         }
         if (line.find("NO_4_WAY_INTERSECTIONS") != std::string::npos) {
-            puzzle_no_4_way_intersections = true;
+            config.no_4_way_intersections = true;
             continue;
         }
         if (line.find("NO_3_WAY_INTERSECTIONS") != std::string::npos) {
-            puzzle_no_3_way_intersections = true;
+            config.no_3_way_intersections = true;
             continue;
         }
         if (line.find("AREA_EQUALS") != std::string::npos) {
-            std::cin >> puzzle_shape_size_lower_bound;
-            puzzle_shape_size_upper_bound = puzzle_shape_size_lower_bound;
+            std::cin >> config.shape_size_lower_bound;
+            config.shape_size_upper_bound = config.shape_size_lower_bound;
             continue;
         }
         if (line.find("AREA_AT_LEAST") != std::string::npos) {
-            std::cin >> puzzle_shape_size_lower_bound;
+            std::cin >> config.shape_size_lower_bound;
             continue;
         }
         if (line.find("AREA_AT_MOST") != std::string::npos) {
-            std::cin >> puzzle_shape_size_upper_bound;
+            std::cin >> config.shape_size_upper_bound;
             continue;
         }
         if (line.find("SHAPE") != std::string::npos) {
@@ -176,17 +176,17 @@ int main() {
                ((puzzle[to_puzzle_x(b.x)][to_puzzle_y(b.y)] & AREA_SHAPE_SIZE_BIT) >> AREA_SHAPE_SIZE_BIT_SHIFT);
     });
 
-    if (puzzle_shape_size_lower_bound == -1) {
-        puzzle_shape_size_lower_bound = 1;
+    if (config.shape_size_lower_bound == -1) {
+        config.shape_size_lower_bound = 1;
     }
-    if (puzzle_shape_size_upper_bound == -1) {
-        puzzle_shape_size_upper_bound = empty_area_cnt;
+    if (config.shape_size_upper_bound == -1) {
+        config.shape_size_upper_bound = empty_area_cnt;
     }
     if (slash_check_enable) {
-        puzzle_shape_size_lower_bound = std::max(puzzle_shape_size_lower_bound, slash_check_slash_cnt);
+        config.shape_size_lower_bound = std::max(config.shape_size_lower_bound, slash_check_slash_cnt);
     }
 
-    if (puzzle_only_rectangles) {
+    if (config.only_rectangles) {
 
         int up, down, left, right;
         for (int k = 0; k < (int)shapes.size(); ++k) {
@@ -208,7 +208,7 @@ int main() {
         for (int i = 0; i < 100; ++i) {
             temp_shape[i] = new uint32_t[100];
         }
-        for (int size = puzzle_shape_size_lower_bound; size <= puzzle_shape_size_upper_bound; ++size) {
+        for (int size = config.shape_size_lower_bound; size <= config.shape_size_upper_bound; ++size) {
             for (int l = 1; l <= (size / l); ++l) {
                 if (size % l != 0) continue;
                 int h = size / l;
@@ -228,12 +228,12 @@ int main() {
         delete[] temp_shape;
     }
 
-    if (puzzle_predefine_shapes_only) {
-        puzzle_shape_size_lower_bound = shapes[0].nodes.size();
-        puzzle_shape_size_upper_bound = shapes[0].nodes.size();
+    if (config.predefine_shapes_only) {
+        config.shape_size_lower_bound = shapes[0].nodes.size();
+        config.shape_size_upper_bound = shapes[0].nodes.size();
         for (const auto& shape : shapes) {
-            puzzle_shape_size_lower_bound = std::min(puzzle_shape_size_lower_bound, (int)shape.nodes.size());
-            puzzle_shape_size_upper_bound = std::max(puzzle_shape_size_upper_bound, (int)shape.nodes.size());
+            config.shape_size_lower_bound = std::min(config.shape_size_lower_bound, (int)shape.nodes.size());
+            config.shape_size_upper_bound = std::max(config.shape_size_upper_bound, (int)shape.nodes.size());
         }
     }
 
