@@ -1543,6 +1543,10 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
 
         ret_code = 0;
 
+        if (shapes[i].shape_index == 0) {
+            continue;
+        }
+
         // ----------------------------------------------------
         // Type 0 check
 

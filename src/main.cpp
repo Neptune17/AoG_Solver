@@ -120,7 +120,7 @@ int main() {
                 delta_on_duplicate_shape_index += 1;
             }
             if (delta_on_duplicate_shape_index != 0) {
-                duplicate_shape_index_to_be_modified.push_back(std::make_pair(next_shape_index, next_shape_index - delta_on_duplicate_shape_index));
+                duplicate_shape_index_to_be_modified.push_back(std::make_pair(next_shape_index - 1 + delta_on_duplicate_shape_index, next_shape_index - 1));
             }
 
             for (int i = 0; i < MAX_SHAPE_SIZE; ++i) {
