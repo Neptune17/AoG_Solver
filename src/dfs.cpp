@@ -352,7 +352,7 @@ bool empty_area_check(uint32_t** solve_puzzle) {
                 }
 
                 if (config.all_shapes_same && all_shapes_same_check_shape_index != -1) {
-                    int shape_size = shape_index_to_shape_size_map[all_shapes_same_check_shape_index];
+                    int shape_size = shape_size_by_index[all_shapes_same_check_shape_index];
                     if (dfs_ctx.empty_count % shape_size != 0) {
                         return false;
                     }
@@ -1423,7 +1423,9 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
     }
 
     auto* mark_skip_shape = mark_skip_pool[index];
-    memset(mark_skip_shape, 0, MARK_SKIP_CAP);
+    // Only DEFAULT path reads mark_skip_shape expecting 0-init; other paths never read it.
+    if (ret == SPECIAL_START_DEFAULT)
+        memset(mark_skip_shape, 0, MARK_SKIP_CAP);
 
     bool mark_slash[16]; // max slash groups (4-bit field)
 
@@ -1466,12 +1468,12 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
             (solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] != AREA_NORMAL) &&
             (puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] != AREA_BLOCK)) {
             if (puzzle[to_puzzle_x(x) - 1][to_puzzle_y(y)] & LINE_LARGER) {
-                for (int i = shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                for (int i = shape_size_by_index[solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                      i <= shape_size_upper_bound; ++i) mark_size[i] = false;
             }
             else {
                 for (int i = shape_size_lower_bound;
-                     i <= shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                     i <= shape_size_by_index[solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                      ++i) mark_size[i] = false;
             }
         }
@@ -1481,11 +1483,11 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
             (puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] != AREA_BLOCK)) {
             if (puzzle[to_puzzle_x(x) + 1][to_puzzle_y(y)] & LINE_LARGER) {
                 for (int i = shape_size_lower_bound;
-                     i <= shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                     i <= shape_size_by_index[solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                      ++i) mark_size[i] = false;
             }
             else {
-                for (int i = shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                for (int i = shape_size_by_index[solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                      i <= shape_size_upper_bound; ++i) mark_size[i] = false;
             }
         }
@@ -1494,12 +1496,12 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
             (solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] != AREA_NORMAL) &&
             (puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] != AREA_BLOCK)) {
             if (puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 1] & LINE_LARGER) {
-                for (int i = shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                for (int i = shape_size_by_index[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                      i <= shape_size_upper_bound; ++i) mark_size[i] = false;
             }
             else {
                 for (int i = shape_size_lower_bound;
-                     i <= shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                     i <= shape_size_by_index[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                      ++i) mark_size[i] = false;
             }
         }
@@ -1509,11 +1511,11 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
             (puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] != AREA_BLOCK)) {
             if (puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 1] & LINE_LARGER) {
                 for (int i = shape_size_lower_bound;
-                     i <= shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                     i <= shape_size_by_index[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                      ++i) mark_size[i] = false;
             }
             else {
-                for (int i = shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                for (int i = shape_size_by_index[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                      i <= shape_size_upper_bound; ++i) mark_size[i] = false;
             }
         }
@@ -1524,7 +1526,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
             if ((puzzle[puz_x][puz_y] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[puz_x - dir_x][puz_y - dir_y] != AREA_NORMAL) &&
                 (puzzle[puz_x - dir_x][puz_y - dir_y] != AREA_BLOCK)) {
                 int diff_size = (puzzle[puz_x][puz_y] & LINE_SIZE_DIFF_BIT) >> LINE_SIZE_DIFF_BIT_SHIFT;
-                int neighbor_size = shape_index_to_shape_size_map[solve_puzzle[puz_x - dir_x][puz_y - dir_y] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+                int neighbor_size = shape_size_by_index[solve_puzzle[puz_x - dir_x][puz_y - dir_y] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
                 for (int i = shape_size_lower_bound; i <= shape_size_upper_bound; ++i) {
                     if (i == neighbor_size + diff_size || i == neighbor_size - diff_size) continue;
                     mark_size[i] = false;
@@ -1599,16 +1601,18 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
             for (int j = 0; j < (int)shapes[i].nodes.size(); ++j) {
                 int new_x = x + shapes[i].nodes[j].x - start_x;
                 int new_y = y + shapes[i].nodes[j].y - start_y;
-                int puzzle_new_x = to_puzzle_x(new_x);
-                int puzzle_new_y = to_puzzle_y(new_y);
 
                 if (new_x < 1 || new_x > (int)puzzle_n_row || new_y < 1 || new_y > (int)puzzle_n_col) {
                     ret_code |= RET_CODE_BLOCK_AREA;
                     break;
                 }
 
+                int puzzle_new_x = to_puzzle_x(new_x);
+                int puzzle_new_y = to_puzzle_y(new_y);
+                uint32_t pval = puzzle[puzzle_new_x][puzzle_new_y]; // cache puzzle cell read
+
                 // Type 1 check: BLOCK
-                if (puzzle[puzzle_new_x][puzzle_new_y] == AREA_BLOCK) {
+                if (pval == AREA_BLOCK) {
                     ret_code |= RET_CODE_BLOCK_AREA;
                     Node error_node = {shapes[i].nodes[j].x, shapes[i].nodes[j].y};
                     for (int skip_index : node_to_shape_index[error_node]) {
@@ -1628,8 +1632,8 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                 }
 
                 // Type 1 check: AREA_SLASH_CHECK
-                if (puzzle[puzzle_new_x][puzzle_new_y] & AREA_SLASH_INDEX_BIT) {
-                    int slash_index = puzzle[puzzle_new_x][puzzle_new_y] >> AREA_SLASH_INDEX_BIT_SHIFT;
+                if (pval & AREA_SLASH_INDEX_BIT) {
+                    int slash_index = pval >> AREA_SLASH_INDEX_BIT_SHIFT;
                     if (mark_slash[slash_index]) {
                         ret_code |= RET_CODE_SLASH;
                         break;
@@ -1638,8 +1642,8 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                 }
 
                 // Type 1 check: AREA_SHAPE_INDEX_CHECK
-                if (puzzle[puzzle_new_x][puzzle_new_y] & AREA_SHAPE_INDEX_BIT) {
-                    int target_index = puzzle[puzzle_new_x][puzzle_new_y] >> AREA_SHAPE_INDEX_BIT_SHIFT;
+                if (pval & AREA_SHAPE_INDEX_BIT) {
+                    int target_index = pval >> AREA_SHAPE_INDEX_BIT_SHIFT;
                     if ((uint32_t)target_index != shapes[i].shape_index) {
                         ret_code |= RET_CODE_AREA_SHAPE_INDEX;
                         break;
@@ -1647,8 +1651,8 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                 }
 
                 // Type 1 check: AREA_SHAPE_SIZE_CHECK
-                if (puzzle[puzzle_new_x][puzzle_new_y] & AREA_SHAPE_SIZE_BIT) {
-                    int target_size = puzzle[puzzle_new_x][puzzle_new_y] >> AREA_SHAPE_SIZE_BIT_SHIFT;
+                if (pval & AREA_SHAPE_SIZE_BIT) {
+                    int target_size = pval >> AREA_SHAPE_SIZE_BIT_SHIFT;
                     if ((size_t)target_size != shapes[i].nodes.size()) {
                         ret_code |= RET_CODE_AREA_SHAPE_SIZE;
                         break;
@@ -1667,7 +1671,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                 }
 
                 // Type 1 check: AREA_COMPASS_CHECK
-                if (puzzle[puzzle_new_x][puzzle_new_y] & AREA_COMPASS_ENABLE) {
+                if (pval & AREA_COMPASS_ENABLE) {
                     compass_visited[compass_visited_cnt] = {new_x, new_y};
                     compass_visited_cnt++;
                 }

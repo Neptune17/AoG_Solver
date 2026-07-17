@@ -5,7 +5,8 @@
 // Global shape state
 // ------------------------------------------------------------
 std::vector<Shape> shapes;
-std::map<uint32_t, int> shape_index_to_shape_size_map;
+// O(1) array lookup for shape sizes (index is small int, starts at 1)
+std::vector<int> shape_size_by_index(1, 0); // [0] unused
 std::unordered_map<uint32_t, std::vector<size_t>> shape_digest_index;
 uint32_t next_shape_index = 1;
 
@@ -124,7 +125,7 @@ uint32_t shapes_insert(uint32_t** shape, uint32_t shape_size) {
     }
 
     if (insert_success_count != 0) {
-        shape_index_to_shape_size_map[next_shape_index] = shapes[shapes.size() - 1].nodes.size();
+        shape_size_by_index.push_back(shapes[shapes.size() - 1].nodes.size());
         next_shape_index++;
     }
 

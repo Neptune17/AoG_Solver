@@ -43,28 +43,28 @@ bool check_nearby_shape(uint32_t x, uint32_t y, uint32_t n_row, uint32_t n_col, 
 bool check_nearby_size(uint32_t x, uint32_t y, uint32_t n_row, uint32_t n_col, uint32_t** solve_puzzle) {
     uint32_t index = solve_puzzle[x][y];
     uint32_t my_key = (index & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT;
-    int my_size = shape_index_to_shape_size_map[my_key];
+    int my_size = shape_size_by_index[my_key];
     if (area_in_puzzle_range(x - 2, y, n_row, n_col)) {
-        if (solve_puzzle[x - 2][y] != AREA_NORMAL && solve_puzzle[x - 2][y] != solve_puzzle[x][y]) {
-            int nearby_size = shape_index_to_shape_size_map[(solve_puzzle[x - 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+        if (solve_puzzle[x - 2][y] != AREA_NORMAL && solve_puzzle[x - 2][y] != AREA_BLOCK && solve_puzzle[x - 2][y] != solve_puzzle[x][y]) {
+            int nearby_size = shape_size_by_index[(solve_puzzle[x - 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
             if (my_size == nearby_size) return false;
         }
     }
     if (area_in_puzzle_range(x + 2, y, n_row, n_col)) {
-        if (solve_puzzle[x + 2][y] != AREA_NORMAL && solve_puzzle[x + 2][y] != solve_puzzle[x][y]) {
-            int nearby_size = shape_index_to_shape_size_map[(solve_puzzle[x + 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+        if (solve_puzzle[x + 2][y] != AREA_NORMAL && solve_puzzle[x + 2][y] != AREA_BLOCK && solve_puzzle[x + 2][y] != solve_puzzle[x][y]) {
+            int nearby_size = shape_size_by_index[(solve_puzzle[x + 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
             if (my_size == nearby_size) return false;
         }
     }
     if (area_in_puzzle_range(x, y - 2, n_row, n_col)) {
-        if (solve_puzzle[x][y - 2] != AREA_NORMAL && solve_puzzle[x][y - 2] != solve_puzzle[x][y]) {
-            int nearby_size = shape_index_to_shape_size_map[(solve_puzzle[x][y - 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+        if (solve_puzzle[x][y - 2] != AREA_NORMAL && solve_puzzle[x][y - 2] != AREA_BLOCK && solve_puzzle[x][y - 2] != solve_puzzle[x][y]) {
+            int nearby_size = shape_size_by_index[(solve_puzzle[x][y - 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
             if (my_size == nearby_size) return false;
         }
     }
     if (area_in_puzzle_range(x, y + 2, n_row, n_col)) {
-        if (solve_puzzle[x][y + 2] != AREA_NORMAL && solve_puzzle[x][y + 2] != solve_puzzle[x][y]) {
-            int nearby_size = shape_index_to_shape_size_map[(solve_puzzle[x][y + 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+        if (solve_puzzle[x][y + 2] != AREA_NORMAL && solve_puzzle[x][y + 2] != AREA_BLOCK && solve_puzzle[x][y + 2] != solve_puzzle[x][y]) {
+            int nearby_size = shape_size_by_index[(solve_puzzle[x][y + 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
             if (my_size == nearby_size) return false;
         }
     }
@@ -79,18 +79,18 @@ bool check_edge_shape(uint32_t x, uint32_t y, uint32_t n_row, uint32_t n_col, ui
     uint32_t my_key = (index & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT;
     // Up
     if (area_in_puzzle_range(x - 2, y, n_row, n_col)) {
-        if (solve_puzzle[x - 2][y] != AREA_NORMAL && puzzle[x - 1][y] & LINE_EQUAL &&
+        if (solve_puzzle[x - 2][y] != AREA_NORMAL && solve_puzzle[x - 2][y] != AREA_BLOCK && puzzle[x - 1][y] & LINE_EQUAL &&
             ((solve_puzzle[x - 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) != (index & SOLVE_AREA_SHAPE_INDEX_BIT))) {
             return false;
         }
-        if (solve_puzzle[x - 2][y] != AREA_NORMAL && puzzle[x - 1][y] & LINE_DIFFERENT &&
+        if (solve_puzzle[x - 2][y] != AREA_NORMAL && solve_puzzle[x - 2][y] != AREA_BLOCK && puzzle[x - 1][y] & LINE_DIFFERENT &&
             ((solve_puzzle[x - 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) == (index & SOLVE_AREA_SHAPE_INDEX_BIT))) {
             return false;
         }
-        if (solve_puzzle[x - 2][y] != AREA_NORMAL &&
+        if (solve_puzzle[x - 2][y] != AREA_NORMAL && solve_puzzle[x - 2][y] != AREA_BLOCK &&
             (puzzle[x - 1][y] & LINE_LARGER || puzzle[x - 1][y] & LINE_SMALLER || (puzzle[x - 1][y] & LINE_SIZE_DIFF_BIT) != 0)) {
-            int left_size = shape_index_to_shape_size_map[(solve_puzzle[x - 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
-            int right_size = shape_index_to_shape_size_map[my_key];
+            int left_size = shape_size_by_index[(solve_puzzle[x - 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+            int right_size = shape_size_by_index[my_key];
             if (puzzle[x - 1][y] & LINE_LARGER && left_size <= right_size) return false;
             if (puzzle[x - 1][y] & LINE_SMALLER && left_size >= right_size) return false;
             if (puzzle[x - 1][y] & LINE_SIZE_DIFF_BIT) {
@@ -101,18 +101,18 @@ bool check_edge_shape(uint32_t x, uint32_t y, uint32_t n_row, uint32_t n_col, ui
     }
     // Down
     if (area_in_puzzle_range(x + 2, y, n_row, n_col)) {
-        if (solve_puzzle[x + 2][y] != AREA_NORMAL && puzzle[x + 1][y] & LINE_EQUAL &&
+        if (solve_puzzle[x + 2][y] != AREA_NORMAL && solve_puzzle[x + 2][y] != AREA_BLOCK && puzzle[x + 1][y] & LINE_EQUAL &&
             ((solve_puzzle[x + 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) != (index & SOLVE_AREA_SHAPE_INDEX_BIT))) {
             return false;
         }
-        if (solve_puzzle[x + 2][y] != AREA_NORMAL && puzzle[x + 1][y] & LINE_DIFFERENT &&
+        if (solve_puzzle[x + 2][y] != AREA_NORMAL && solve_puzzle[x + 2][y] != AREA_BLOCK && puzzle[x + 1][y] & LINE_DIFFERENT &&
             ((solve_puzzle[x + 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) == (index & SOLVE_AREA_SHAPE_INDEX_BIT))) {
             return false;
         }
-        if (solve_puzzle[x + 2][y] != AREA_NORMAL &&
+        if (solve_puzzle[x + 2][y] != AREA_NORMAL && solve_puzzle[x + 2][y] != AREA_BLOCK &&
             (puzzle[x + 1][y] & LINE_LARGER || puzzle[x + 1][y] & LINE_SMALLER || (puzzle[x + 1][y] & LINE_SIZE_DIFF_BIT) != 0)) {
-            int left_size = shape_index_to_shape_size_map[my_key];
-            int right_size = shape_index_to_shape_size_map[(solve_puzzle[x + 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+            int left_size = shape_size_by_index[my_key];
+            int right_size = shape_size_by_index[(solve_puzzle[x + 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
             if (puzzle[x + 1][y] & LINE_LARGER && left_size <= right_size) return false;
             if (puzzle[x + 1][y] & LINE_SMALLER && left_size >= right_size) return false;
             if (puzzle[x + 1][y] & LINE_SIZE_DIFF_BIT) {
@@ -123,18 +123,18 @@ bool check_edge_shape(uint32_t x, uint32_t y, uint32_t n_row, uint32_t n_col, ui
     }
     // Left
     if (area_in_puzzle_range(x, y - 2, n_row, n_col)) {
-        if (solve_puzzle[x][y - 2] != AREA_NORMAL && puzzle[x][y - 1] & LINE_EQUAL &&
+        if (solve_puzzle[x][y - 2] != AREA_NORMAL && solve_puzzle[x][y - 2] != AREA_BLOCK && puzzle[x][y - 1] & LINE_EQUAL &&
             ((solve_puzzle[x][y - 2] & SOLVE_AREA_SHAPE_INDEX_BIT) != (index & SOLVE_AREA_SHAPE_INDEX_BIT))) {
             return false;
         }
-        if (solve_puzzle[x][y - 2] != AREA_NORMAL && puzzle[x][y - 1] & LINE_DIFFERENT &&
+        if (solve_puzzle[x][y - 2] != AREA_NORMAL && solve_puzzle[x][y - 2] != AREA_BLOCK && puzzle[x][y - 1] & LINE_DIFFERENT &&
             ((solve_puzzle[x][y - 2] & SOLVE_AREA_SHAPE_INDEX_BIT) == (index & SOLVE_AREA_SHAPE_INDEX_BIT))) {
             return false;
         }
-        if (solve_puzzle[x][y - 2] != AREA_NORMAL &&
+        if (solve_puzzle[x][y - 2] != AREA_NORMAL && solve_puzzle[x][y - 2] != AREA_BLOCK &&
             (puzzle[x][y - 1] & LINE_LARGER || puzzle[x][y - 1] & LINE_SMALLER || (puzzle[x][y - 1] & LINE_SIZE_DIFF_BIT) != 0)) {
-            int up_size = shape_index_to_shape_size_map[(solve_puzzle[x][y - 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
-            int down_size = shape_index_to_shape_size_map[my_key];
+            int up_size = shape_size_by_index[(solve_puzzle[x][y - 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+            int down_size = shape_size_by_index[my_key];
             if (puzzle[x][y - 1] & LINE_LARGER && up_size <= down_size) return false;
             if (puzzle[x][y - 1] & LINE_SMALLER && up_size >= down_size) return false;
             if (puzzle[x][y - 1] & LINE_SIZE_DIFF_BIT) {
@@ -145,18 +145,18 @@ bool check_edge_shape(uint32_t x, uint32_t y, uint32_t n_row, uint32_t n_col, ui
     }
     // Right
     if (area_in_puzzle_range(x, y + 2, n_row, n_col)) {
-        if (solve_puzzle[x][y + 2] != AREA_NORMAL && puzzle[x][y + 1] & LINE_EQUAL &&
+        if (solve_puzzle[x][y + 2] != AREA_NORMAL && solve_puzzle[x][y + 2] != AREA_BLOCK && puzzle[x][y + 1] & LINE_EQUAL &&
             ((solve_puzzle[x][y + 2] & SOLVE_AREA_SHAPE_INDEX_BIT) != (index & SOLVE_AREA_SHAPE_INDEX_BIT))) {
             return false;
         }
-        if (solve_puzzle[x][y + 2] != AREA_NORMAL && puzzle[x][y + 1] & LINE_DIFFERENT &&
+        if (solve_puzzle[x][y + 2] != AREA_NORMAL && solve_puzzle[x][y + 2] != AREA_BLOCK && puzzle[x][y + 1] & LINE_DIFFERENT &&
             ((solve_puzzle[x][y + 2] & SOLVE_AREA_SHAPE_INDEX_BIT) == (index & SOLVE_AREA_SHAPE_INDEX_BIT))) {
             return false;
         }
-        if (solve_puzzle[x][y + 2] != AREA_NORMAL &&
+        if (solve_puzzle[x][y + 2] != AREA_NORMAL && solve_puzzle[x][y + 2] != AREA_BLOCK &&
             (puzzle[x][y + 1] & LINE_LARGER || puzzle[x][y + 1] & LINE_SMALLER || (puzzle[x][y + 1] & LINE_SIZE_DIFF_BIT) != 0)) {
-            int up_size = shape_index_to_shape_size_map[my_key];
-            int down_size = shape_index_to_shape_size_map[(solve_puzzle[x][y + 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
+            int up_size = shape_size_by_index[my_key];
+            int down_size = shape_size_by_index[(solve_puzzle[x][y + 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
             if (puzzle[x][y + 1] & LINE_LARGER && up_size <= down_size) return false;
             if (puzzle[x][y + 1] & LINE_SMALLER && up_size >= down_size) return false;
             if (puzzle[x][y + 1] & LINE_SIZE_DIFF_BIT) {

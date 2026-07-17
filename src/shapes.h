@@ -13,7 +13,8 @@
 // Global shape state
 // ------------------------------------------------------------
 extern std::vector<Shape> shapes;
-extern std::map<uint32_t, int> shape_index_to_shape_size_map;
+// O(1) array lookup for shape sizes (index is small int, starts at 1)
+extern std::vector<int> shape_size_by_index;
 extern std::unordered_map<uint32_t, std::vector<size_t>> shape_digest_index;
 extern uint32_t next_shape_index;
 
