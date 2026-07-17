@@ -16,6 +16,21 @@
 // ------------------------------------------------------------
 DFSContext dfs_ctx;
 
+// Reusable shape buffer for place_non_predifined_shape (global avoids 40KB stack per call)
+static uint32_t _shape_buf[MAX_SHAPE_SIZE][MAX_SHAPE_SIZE];
+static uint32_t* temp_shape[MAX_SHAPE_SIZE];
+static bool _temp_shape_init = []() {
+    for (int k = 0; k < MAX_SHAPE_SIZE; ++k) temp_shape[k] = _shape_buf[k];
+    return true;
+}();
+
+// Per-recursion-level pools for mark_skip_shape / mark_size (DFS depth <= 128)
+static constexpr int MAX_DFS_DEPTH = 128;
+static constexpr int MARK_SKIP_CAP = 262144;
+static constexpr int MARK_SIZE_CAP = 128;
+static bool mark_skip_pool[MAX_DFS_DEPTH][MARK_SKIP_CAP];
+static bool mark_size_pool[MAX_DFS_DEPTH][MARK_SIZE_CAP];
+
 // Encode Node{x, y} into a single uint64_t for fast hashing
 inline uint64_t encode_node(int x, int y) {
     return (static_cast<uint64_t>(static_cast<uint32_t>(x)) << 32) | static_cast<uint32_t>(y);
@@ -766,11 +781,6 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
     int stack_candidates_size[MAX_SHAPE_SIZE];
     int stack_top = 0;
 
-    // Reusable shape buffer (stack-allocated, no leak)
-    uint32_t _shape_buf[MAX_SHAPE_SIZE][MAX_SHAPE_SIZE];
-    uint32_t* temp_shape_ptr[MAX_SHAPE_SIZE];
-    for (int i = 0; i < MAX_SHAPE_SIZE; ++i) temp_shape_ptr[i] = _shape_buf[i];
-
     dfs_expand_candidates[dfs_expand_candidates_cnt] = {0, 0};
     dfs_expand_candidates_distance[dfs_expand_candidates_cnt] = 0;
     dfs_expand_candidates_cnt++;
@@ -873,11 +883,11 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             for (int i = 0; i < current_size; ++i) {
                 int sx = dfs_current_shape[i].x - start_x;
                 int sy = dfs_current_shape[i].y - start_y;
-                temp_shape_ptr[sx][sy] = 1;
+                temp_shape[sx][sy] = 1;
                 shape_size = std::max(shape_size, std::max(sx, sy) + 1);
             }
 
-            uint32_t shape_index = shapes_search(temp_shape_ptr, shape_size);
+            uint32_t shape_index = shapes_search(temp_shape, shape_size);
             if (shape_index != 0xffffffffu) {
                 if (up_left_seq && (int)shape_index <= known_shape_index) {
                     continue;
@@ -888,8 +898,8 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 }
             }
             else {
-                shapes_insert(temp_shape_ptr, shape_size);
-                shape_index = shapes_search(temp_shape_ptr, shape_size);
+                shapes_insert(temp_shape, shape_size);
+                shape_index = shapes_search(temp_shape, shape_size);
             }
 
 
@@ -1354,8 +1364,8 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
         return 0; // Solved
     }
 
-    bool mark_skip_shape[65536];
-    memset(mark_skip_shape, 0, sizeof(mark_skip_shape));
+    auto* mark_skip_shape = mark_skip_pool[index];
+    memset(mark_skip_shape, 0, MARK_SKIP_CAP);
 
     bool mark_slash[slash_check_slash_cnt + 1];
 
@@ -1366,8 +1376,8 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
 
     bool one_symbol_per_region_check;
 
-    bool mark_size[65536];
-    memset(mark_size, 0, sizeof(mark_size));
+    auto* mark_size = mark_size_pool[index];
+    memset(mark_size, 0, MARK_SIZE_CAP);
 
     auto [range_check, shape_size_lower_bound, shape_size_upper_bound] = empty_area_size_range(x, y, solve_puzzle);
 
@@ -1544,7 +1554,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                     ret_code |= RET_CODE_BLOCK_AREA;
                     Node error_node = {shapes[i].nodes[j].x, shapes[i].nodes[j].y};
                     for (int skip_index : node_to_shape_index[error_node]) {
-                        mark_skip_shape[skip_index] = true;
+                        mark_skip_shape[skip_index] = 1;
                     }
                     break;
                 }
@@ -1554,7 +1564,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                     ret_code |= RET_CODE_FILLED_AREA;
                     Node error_node = {shapes[i].nodes[j].x, shapes[i].nodes[j].y};
                     for (int skip_index : node_to_shape_index[error_node]) {
-                        mark_skip_shape[skip_index] = true;
+                        mark_skip_shape[skip_index] = 1;
                     }
                     break;
                 }
