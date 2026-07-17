@@ -25,11 +25,42 @@ static bool _temp_shape_init = []() {
 }();
 
 // Per-recursion-level pools for mark_skip_shape / mark_size (DFS depth <= 128)
-static constexpr int MAX_DFS_DEPTH = 128;
+static constexpr int MAX_DFS_DEPTH = MAX_SHAPE_SIZE;
 static constexpr int MARK_SKIP_CAP = 262144;
-static constexpr int MARK_SIZE_CAP = 128;
+static constexpr int MARK_SIZE_CAP = MAX_SHAPE_SIZE;
 static bool mark_skip_pool[MAX_DFS_DEPTH][MARK_SKIP_CAP];
 static bool mark_size_pool[MAX_DFS_DEPTH][MARK_SIZE_CAP];
+
+// Per-level state for place_non_predifined_shape (~10KB per level, ~1.3MB total in BSS)
+static constexpr int MAX_EXPAND_CANDIDATES = (MAX_SHAPE_SIZE + 2) * 3;
+struct PlaceLevel {
+    Node  current_shape[MAX_SHAPE_SIZE];
+    int   current_shape_cnt = 0;
+    Node  expand_candidates[MAX_EXPAND_CANDIDATES];
+    int   expand_candidates_distance[MAX_EXPAND_CANDIDATES];
+    int   expand_candidates_cnt = 0;
+    int   rectangle_up[MAX_SHAPE_SIZE];
+    int   rectangle_down[MAX_SHAPE_SIZE];
+    int   rectangle_left[MAX_SHAPE_SIZE];
+    int   rectangle_right[MAX_SHAPE_SIZE];
+    Node  palisade_visited[MAX_SHAPE_SIZE];
+    int   palisade_visited_cnt = 0;
+    Node  compass_visited[MAX_SHAPE_SIZE];
+    int   compass_visited_up_cnt[MAX_SHAPE_SIZE];
+    int   compass_visited_down_cnt[MAX_SHAPE_SIZE];
+    int   compass_visited_left_cnt[MAX_SHAPE_SIZE];
+    int   compass_visited_right_cnt[MAX_SHAPE_SIZE];
+    int   compass_visited_cnt = 0;
+    int   stack_size[MAX_SHAPE_SIZE];
+    int   stack_expand_distance_lb[MAX_SHAPE_SIZE];
+    int   stack_expand_x_lb[MAX_SHAPE_SIZE];
+    int   stack_expand_y_lb[MAX_SHAPE_SIZE];
+    int   stack_candidates_i[MAX_SHAPE_SIZE];
+    int   stack_candidates_size[MAX_SHAPE_SIZE];
+    int   stack_top = 0;
+    std::optional<Node> symbol_loc;
+};
+static PlaceLevel place_pool[MAX_DFS_DEPTH];
 
 // Encode Node{x, y} into a single uint64_t for fast hashing
 inline uint64_t encode_node(int x, int y) {
@@ -744,48 +775,52 @@ std::tuple<uint32_t, int, int> find_special_start_area(uint32_t** solve_puzzle) 
 int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_left_seq,
                                int known_shape_index, uint32_t** solve_puzzle) {
 
-    const int MAX_EXPAND_CANDIDATES = (MAX_SHAPE_SIZE + 2) * 3;
-
+    // VLA for slash (small, stays on stack)
     bool mark_slash[slash_check_slash_cnt + 1];
     memset(mark_slash, 0, sizeof(mark_slash));
     int slash_distance[MAX_SHAPE_SIZE][slash_check_slash_cnt + 1][slash_nodes[1].size() + 1];
 
-    Node dfs_current_shape[MAX_SHAPE_SIZE];
-    int dfs_current_shape_cnt = 0;
-    Node dfs_expand_candidates[MAX_EXPAND_CANDIDATES];
-    int dfs_expand_candidates_distance[MAX_EXPAND_CANDIDATES];
-    int dfs_expand_candidates_cnt = 0;
+    // Pooled per-level state (avoids ~10KB stack per recursion)
+    auto& L = place_pool[index];
+    auto* dfs_current_shape              = L.current_shape;
+    auto& dfs_current_shape_cnt          = L.current_shape_cnt;
+    auto* dfs_expand_candidates          = L.expand_candidates;
+    auto* dfs_expand_candidates_distance = L.expand_candidates_distance;
+    auto& dfs_expand_candidates_cnt      = L.expand_candidates_cnt;
+    auto* dfs_rectangle_up               = L.rectangle_up;
+    auto* dfs_rectangle_down             = L.rectangle_down;
+    auto* dfs_rectangle_left             = L.rectangle_left;
+    auto* dfs_rectangle_right            = L.rectangle_right;
+    auto* palisade_visited               = L.palisade_visited;
+    auto& palisade_visited_cnt           = L.palisade_visited_cnt;
+    auto* compass_visited                = L.compass_visited;
+    auto* compass_visited_up_cnt         = L.compass_visited_up_cnt;
+    auto* compass_visited_down_cnt       = L.compass_visited_down_cnt;
+    auto* compass_visited_left_cnt        = L.compass_visited_left_cnt;
+    auto* compass_visited_right_cnt       = L.compass_visited_right_cnt;
+    auto& compass_visited_cnt            = L.compass_visited_cnt;
+    auto& symbol_loc                     = L.symbol_loc;
+    auto* stack_size                     = L.stack_size;
+    auto* stack_expand_distance_lb        = L.stack_expand_distance_lb;
+    auto* stack_expand_x_lb              = L.stack_expand_x_lb;
+    auto* stack_expand_y_lb              = L.stack_expand_y_lb;
+    auto* stack_candidates_i             = L.stack_candidates_i;
+    auto* stack_candidates_size          = L.stack_candidates_size;
+    auto& stack_top                      = L.stack_top;
 
-    int dfs_rectangle_up[MAX_SHAPE_SIZE];
-    int dfs_rectangle_down[MAX_SHAPE_SIZE];
-    int dfs_rectangle_left[MAX_SHAPE_SIZE];
-    int dfs_rectangle_right[MAX_SHAPE_SIZE];
+    // Reset per-call state
+    dfs_current_shape_cnt = 0;
+    dfs_expand_candidates_cnt = 0;
+    palisade_visited_cnt = 0;
+    compass_visited_cnt = 0;
+    symbol_loc.reset();
+    stack_top = 0;
 
-    Node palisade_visited[MAX_SHAPE_SIZE];
-    int palisade_visited_cnt = 0;
+    dfs_expand_candidates[0] = {0, 0};
+    dfs_expand_candidates_distance[0] = 0;
+    dfs_expand_candidates_cnt = 1;
 
-    Node compass_visited[MAX_SHAPE_SIZE];
-    int compass_visited_up_cnt[MAX_SHAPE_SIZE];
-    int compass_visited_down_cnt[MAX_SHAPE_SIZE];
-    int compass_visited_left_cnt[MAX_SHAPE_SIZE];
-    int compass_visited_right_cnt[MAX_SHAPE_SIZE];
-    int compass_visited_cnt = 0;
-
-    std::optional<Node> symbol_loc;
-
-    int stack_size[MAX_SHAPE_SIZE];
-    int stack_expand_distance_lb[MAX_SHAPE_SIZE];
-    int stack_expand_x_lb[MAX_SHAPE_SIZE];
-    int stack_expand_y_lb[MAX_SHAPE_SIZE];
-    int stack_candidates_i[MAX_SHAPE_SIZE];
-    int stack_candidates_size[MAX_SHAPE_SIZE];
-    int stack_top = 0;
-
-    dfs_expand_candidates[dfs_expand_candidates_cnt] = {0, 0};
-    dfs_expand_candidates_distance[dfs_expand_candidates_cnt] = 0;
-    dfs_expand_candidates_cnt++;
-
-    stack_size[stack_top] = 0;
+    stack_size[0] = 0;
     stack_expand_distance_lb[stack_top] = 0;
     stack_expand_x_lb[stack_top] = 0;
     stack_expand_y_lb[stack_top] = 0;
