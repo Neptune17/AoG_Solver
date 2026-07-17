@@ -71,6 +71,7 @@
 #define SPECIAL_START_CORNER 0x00000007u
 #define SPECIAL_START_COMPASS 0x00000008u
 #define SPECIAL_START_LINE_CONSTRAINT 0x00000009u
+#define SPECIAL_START_LINE_SIZE_DIFF 0x0000000au
 
 #define MAX_PUZZLE_SIZE 1000
 #define MAX_SHAPE_SIZE 100
@@ -2192,6 +2193,30 @@ std::tuple<int, int, int> find_empty_line_equal_area(uint32_t** solve_puzzle) {
     return std::make_tuple(-1, -1, -1);
 }
 
+std::tuple<int, int, int> find_empty_line_size_diff_area(uint32_t** solve_puzzle) {
+    // std::cout << "find_empty_line_size_diff_area" << std::endl;
+    for (int i = 1; i <= puzzle_n_row; ++i) {
+        for (int j = 1; j <= puzzle_n_col; ++j) {
+            if (puzzle[to_puzzle_x(i)][to_puzzle_y(j)] != AREA_BLOCK && solve_puzzle[to_puzzle_x(i)][to_puzzle_y(j)] == AREA_NORMAL) {
+                uint32_t line[4];
+                if ((puzzle[to_puzzle_x(i) - 1][to_puzzle_y(j)] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[to_puzzle_x(i) - 2][to_puzzle_y(j)] != AREA_NORMAL) && (puzzle[to_puzzle_x(i) - 2][to_puzzle_y(j)] != AREA_BLOCK)) {
+                    return std::make_tuple(0, i, j);
+                }
+                if ((puzzle[to_puzzle_x(i) + 1][to_puzzle_y(j)] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[to_puzzle_x(i) + 2][to_puzzle_y(j)] != AREA_NORMAL) && (puzzle[to_puzzle_x(i) + 2][to_puzzle_y(j)] != AREA_BLOCK)) {
+                    return std::make_tuple(0, i, j);
+                }
+                if ((puzzle[to_puzzle_x(i)][to_puzzle_y(j) - 1] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[to_puzzle_x(i)][to_puzzle_y(j) - 2] != AREA_NORMAL) && (puzzle[to_puzzle_x(i)][to_puzzle_y(j) - 2] != AREA_BLOCK)) {
+                    return std::make_tuple(0, i, j);
+                }
+                if ((puzzle[to_puzzle_x(i)][to_puzzle_y(j) + 1] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[to_puzzle_x(i)][to_puzzle_y(j) + 2] != AREA_NORMAL) && (puzzle[to_puzzle_x(i)][to_puzzle_y(j) + 2] != AREA_BLOCK)) {
+                    return std::make_tuple(0, i, j);
+                }
+            }
+        }
+    }
+    return std::make_tuple(-1, -1, -1);
+}
+
 std::tuple<int, int, int> find_empty_line_larger_or_smaller_area(uint32_t** solve_puzzle) {
     // std::cout << "find_empty_line_larger_or_smaller_area" << std::endl;
     for (int i = 1; i <= puzzle_n_row; ++i) {
@@ -2269,6 +2294,10 @@ std::tuple<uint32_t, int, int> find_special_start_area(uint32_t** solve_puzzle) 
         special_start_type = SPECIAL_START_LINE_SAME;
     }
     ret = std::get<0>(ret_data);
+    if (ret == -1) {
+        ret_data = find_empty_line_size_diff_area(solve_puzzle);
+        special_start_type = SPECIAL_START_LINE_SIZE_DIFF;
+    }
     if (ret == -1) {
         ret_data = find_empty_line_larger_or_smaller_area(solve_puzzle);
         special_start_type = SPECIAL_START_LINE_SMALLER_OR_LARGER;
@@ -3017,7 +3046,17 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
 
     bool one_symbol_per_region_check;
 
+    bool mark_size[65536];
+    memset(mark_size, 0, sizeof(mark_size));
+
     auto [range_check, shape_size_lower_bound, shape_size_upper_bound] = empty_area_size_range(x, y, solve_puzzle);
+
+    shape_size_lower_bound = std::max(shape_size_lower_bound, puzzle_shape_size_lower_bound);
+    shape_size_upper_bound = std::min(shape_size_upper_bound, puzzle_shape_size_upper_bound);
+
+    for (int i = shape_size_lower_bound; i <= shape_size_upper_bound; ++i) {
+        mark_size[i] = true;
+    }
 
     // Type -1 check
     if (range_check == -1) {
@@ -3025,8 +3064,114 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
     }
 
     if (ret == SPECIAL_START_AREA_SIZE) {
-        shape_size_lower_bound = (puzzle[to_puzzle_x(x)][to_puzzle_y(y)] & AREA_SHAPE_SIZE_BIT) >> AREA_SHAPE_SIZE_BIT_SHIFT;
-        shape_size_upper_bound = shape_size_lower_bound;
+        for (int i = shape_size_lower_bound; i <= shape_size_upper_bound; ++i) {
+            if (i == ((puzzle[to_puzzle_x(x)][to_puzzle_y(y)] & AREA_SHAPE_SIZE_BIT) >> AREA_SHAPE_SIZE_BIT_SHIFT)) {
+                continue;
+            }
+            mark_size[i] = false;
+        }
+    }
+
+    if (ret == SPECIAL_START_LINE_SMALLER_OR_LARGER) {
+        if (((puzzle[to_puzzle_x(x) - 1][to_puzzle_y(y)] & LINE_LARGER) || (puzzle[to_puzzle_x(x) - 1][to_puzzle_y(y)] & LINE_SMALLER)) && (solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] != AREA_NORMAL) && (puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] != AREA_BLOCK)) {
+            if (puzzle[to_puzzle_x(x) - 1][to_puzzle_y(y)] & LINE_LARGER) {
+                for (int i = shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT]; i <= shape_size_upper_bound; ++i) {
+                    mark_size[i] = false;
+                }
+            }
+            else {
+                for (int i = shape_size_lower_bound; i <= shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT]; ++i) {
+                    mark_size[i] = false;
+                }
+            }
+        }
+        if (((puzzle[to_puzzle_x(x) + 1][to_puzzle_y(y)] & LINE_LARGER) || (puzzle[to_puzzle_x(x) + 1][to_puzzle_y(y)] & LINE_SMALLER)) && (solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] != AREA_NORMAL) && (puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] != AREA_BLOCK)) {
+            if (puzzle[to_puzzle_x(x) + 1][to_puzzle_y(y)] & LINE_LARGER) {
+                for (int i = shape_size_lower_bound; i <= shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT]; ++i) {
+                    mark_size[i] = false;
+                }
+            }
+            else {
+                for (int i = shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT]; i <= shape_size_upper_bound; ++i) {
+                    mark_size[i] = false;
+                }
+            }
+        }
+        if (((puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 1] & LINE_LARGER) || (puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 1] & LINE_SMALLER)) && (solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] != AREA_NORMAL) && (puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] != AREA_BLOCK)) {
+            if (puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 1] & LINE_LARGER) {
+                for (int i = shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT]; i <= shape_size_upper_bound; ++i) {
+                    mark_size[i] = false;
+                }
+            }
+            else {
+                for (int i = shape_size_lower_bound; i <= shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT]; ++i) {
+                    mark_size[i] = false;
+                }
+            }
+        }
+        if (((puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 1] & LINE_LARGER) || (puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 1] & LINE_SMALLER)) && (solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] != AREA_NORMAL) && (puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] != AREA_BLOCK)) {
+            if (puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 1] & LINE_LARGER) {
+                for (int i = shape_size_lower_bound; i <= shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT]; ++i) {
+                    mark_size[i] = false;
+                }
+            }
+            else {
+                for (int i = shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT]; i <= shape_size_upper_bound; ++i) {
+                    mark_size[i] = false;
+                }
+            }
+        }
+    }
+
+    if (ret == SPECIAL_START_LINE_SIZE_DIFF) {
+        if ((puzzle[to_puzzle_x(x) - 1][to_puzzle_y(y)] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] != AREA_NORMAL) && (puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] != AREA_BLOCK)) {
+            int diff_size = (puzzle[to_puzzle_x(x) - 1][to_puzzle_y(y)] & LINE_SIZE_DIFF_BIT) >> LINE_SIZE_DIFF_BIT_SHIFT;
+            for (int i = shape_size_lower_bound; i <= shape_size_upper_bound; ++i) {
+                if (i == shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT] + diff_size) {
+                    continue;
+                }
+                if (i == shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) - 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT] - diff_size) {
+                    continue;
+                }
+                mark_size[i] = false;
+            }
+        }
+        if ((puzzle[to_puzzle_x(x) + 1][to_puzzle_y(y)] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] != AREA_NORMAL) && (puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] != AREA_BLOCK)) {
+            int diff_size = (puzzle[to_puzzle_x(x) + 1][to_puzzle_y(y)] & LINE_SIZE_DIFF_BIT) >> LINE_SIZE_DIFF_BIT_SHIFT;
+            for (int i = shape_size_lower_bound; i <= shape_size_upper_bound; ++i) {
+                if (i == shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT] + diff_size) {
+                    continue;
+                }
+                if (i == shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x) + 2][to_puzzle_y(y)] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT] - diff_size) {
+                    continue;
+                }
+                mark_size[i] = false;
+            }
+        }
+        if ((puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 1] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] != AREA_NORMAL) && (puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] != AREA_BLOCK)) {
+            int diff_size = (puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 1] & LINE_SIZE_DIFF_BIT) >> LINE_SIZE_DIFF_BIT_SHIFT;
+            for (int i = shape_size_lower_bound; i <= shape_size_upper_bound; ++i) {
+                if (i == shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT] + diff_size) {
+                    continue;
+                }
+                if (i == shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) - 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT] - diff_size) {
+                    continue;
+                }
+                mark_size[i] = false;
+            }
+        }
+        if ((puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 1] & LINE_SIZE_DIFF_BIT) && (solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] != AREA_NORMAL) && (puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] != AREA_BLOCK)) {
+            int diff_size = (puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 1] & LINE_SIZE_DIFF_BIT) >> LINE_SIZE_DIFF_BIT_SHIFT;
+            for (int i = shape_size_lower_bound; i <= shape_size_upper_bound; ++i) {
+                if (i == shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT] + diff_size) {
+                    continue;
+                }
+                if (i == shape_index_to_shape_size_map[solve_puzzle[to_puzzle_x(x)][to_puzzle_y(y) + 2] >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT] - diff_size) {
+                    continue;
+                }
+                mark_size[i] = false;
+            }
+        }
     }
 
     for (int i = 0; i < shapes.size(); ++i) {
@@ -3059,6 +3204,11 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
 
         // Type 0 check: shape size range
         if (shapes[i].nodes.size() < puzzle_shape_size_lower_bound || shapes[i].nodes.size() > puzzle_shape_size_upper_bound) {
+            ret_code |= RET_CODE_SHAPE_SIZE_RANGE;
+            continue;
+        }
+
+        if (!mark_size[shapes[i].nodes.size()]) {
             ret_code |= RET_CODE_SHAPE_SIZE_RANGE;
             continue;
         }
@@ -3407,6 +3557,9 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
     }
 
     for (int size = shape_size_lower_bound; size <= shape_size_upper_bound; ++size) {
+        if (!mark_size[size]) {
+            continue;
+        }
         int ret = place_non_predifined_shape(index, x, y, size, true, known_shape_index, solve_puzzle);
         if (ret != -1) {
             return ret;
@@ -3648,6 +3801,15 @@ int main() {
                 // next_shape_index ++;
                 shapes_insert(temp_shape, shape_size);
             }
+        }
+    }
+
+    if (puzzle_predefine_shapes_only) {
+        puzzle_shape_size_lower_bound = shapes[0].nodes.size();
+        puzzle_shape_size_upper_bound = shapes[0].nodes.size();
+        for (auto shape : shapes) {
+            puzzle_shape_size_lower_bound = std::min(puzzle_shape_size_lower_bound, (int)shape.nodes.size());
+            puzzle_shape_size_upper_bound = std::max(puzzle_shape_size_upper_bound, (int)shape.nodes.size());
         }
     }
 
