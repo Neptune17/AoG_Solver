@@ -1643,7 +1643,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
 
                 // Type 1 check: AREA_SHAPE_INDEX_CHECK
                 if (pval & AREA_SHAPE_INDEX_BIT) {
-                    int target_index = pval >> AREA_SHAPE_INDEX_BIT_SHIFT;
+                    int target_index = (pval & AREA_SHAPE_INDEX_BIT) >> AREA_SHAPE_INDEX_BIT_SHIFT;
                     if ((uint32_t)target_index != shapes[i].shape_index) {
                         ret_code |= RET_CODE_AREA_SHAPE_INDEX;
                         break;

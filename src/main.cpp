@@ -10,6 +10,9 @@
 #include "dfs.h"
 
 int main() {
+    int delta_on_duplicate_shape_index = 0;
+    std::vector<std::pair<uint32_t, uint32_t>> duplicate_shape_index_to_be_modified;
+    
     std::string line;
 
     while (true) {
@@ -111,7 +114,14 @@ int main() {
                     temp_shape[i][j] = 0;
                 }
             }
-            shapes_insert(temp_shape, temp_shape_size);
+            uint32_t add_count = shapes_insert(temp_shape, temp_shape_size);
+
+            if (add_count == 0) {
+                delta_on_duplicate_shape_index += 1;
+            }
+            if (delta_on_duplicate_shape_index != 0) {
+                duplicate_shape_index_to_be_modified.push_back(std::make_pair(next_shape_index, next_shape_index - delta_on_duplicate_shape_index));
+            }
 
             for (int i = 0; i < MAX_SHAPE_SIZE; ++i) {
                 delete[] temp_shape[i];
@@ -140,6 +150,10 @@ int main() {
     }
 
     build_solve_puzzle(solve_puzzle);
+
+    for (auto pair : duplicate_shape_index_to_be_modified) {
+        modify_shape_index_in_puzzle(pair.first, pair.second);
+    }
 
     int empty_area_cnt = 0;
     for (int x = 1; x <= (int)puzzle_n_row; ++x) {

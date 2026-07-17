@@ -146,7 +146,6 @@ uint32_t parse_area(char c1, char c2, char c3) {
 // ------------------------------------------------------------
 
 void modify_shape_index_in_puzzle(int original_index, int new_index) {
-    std::cout << "Modifying shape index in puzzle from " << original_index << " to " << new_index << std::endl;
     for (int i = 1; i < (int)(puzzle_n_row * 2) + 1 + 2; i += 2) {
         for (int j = 1; j < (int)(puzzle_n_col * 2) + 1 + 2; j += 2) {
             if ((puzzle[i][j] & AREA_SHAPE_INDEX_BIT) &&
