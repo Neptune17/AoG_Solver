@@ -43,40 +43,29 @@ bool check_nearby_shape(uint32_t x, uint32_t y, uint32_t n_row, uint32_t n_col, 
 bool check_nearby_size(uint32_t x, uint32_t y, uint32_t n_row, uint32_t n_col, uint32_t** solve_puzzle) {
     uint32_t index = solve_puzzle[x][y];
     uint32_t my_key = (index & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT;
+    int my_size = shape_index_to_shape_size_map[my_key];
     if (area_in_puzzle_range(x - 2, y, n_row, n_col)) {
         if (solve_puzzle[x - 2][y] != AREA_NORMAL && solve_puzzle[x - 2][y] != solve_puzzle[x][y]) {
-            int my_size = shape_index_to_shape_size_map[my_key];
             int nearby_size = shape_index_to_shape_size_map[(solve_puzzle[x - 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
-            if (my_size == nearby_size) {
-                return false;
-            }
+            if (my_size == nearby_size) return false;
         }
     }
     if (area_in_puzzle_range(x + 2, y, n_row, n_col)) {
         if (solve_puzzle[x + 2][y] != AREA_NORMAL && solve_puzzle[x + 2][y] != solve_puzzle[x][y]) {
-            int my_size = shape_index_to_shape_size_map[my_key];
             int nearby_size = shape_index_to_shape_size_map[(solve_puzzle[x + 2][y] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
-            if (my_size == nearby_size) {
-                return false;
-            }
+            if (my_size == nearby_size) return false;
         }
     }
     if (area_in_puzzle_range(x, y - 2, n_row, n_col)) {
         if (solve_puzzle[x][y - 2] != AREA_NORMAL && solve_puzzle[x][y - 2] != solve_puzzle[x][y]) {
-            int my_size = shape_index_to_shape_size_map[my_key];
             int nearby_size = shape_index_to_shape_size_map[(solve_puzzle[x][y - 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
-            if (my_size == nearby_size) {
-                return false;
-            }
+            if (my_size == nearby_size) return false;
         }
     }
     if (area_in_puzzle_range(x, y + 2, n_row, n_col)) {
         if (solve_puzzle[x][y + 2] != AREA_NORMAL && solve_puzzle[x][y + 2] != solve_puzzle[x][y]) {
-            int my_size = shape_index_to_shape_size_map[my_key];
             int nearby_size = shape_index_to_shape_size_map[(solve_puzzle[x][y + 2] & SOLVE_AREA_SHAPE_INDEX_BIT) >> SOLVE_AREA_SHAPE_INDEX_BIT_SHIFT];
-            if (my_size == nearby_size) {
-                return false;
-            }
+            if (my_size == nearby_size) return false;
         }
     }
     return true;
@@ -376,8 +365,9 @@ bool check_radar(uint32_t x, uint32_t y, uint32_t /*n_row*/, uint32_t /*n_col*/,
         if (puzzle[x + dx][y + dy] & VERTEX_RADAR_BIT) {
             int radar_value = (puzzle[x + dx][y + dy] & VERTEX_RADAR_BIT) >> VERTEX_RADAR_BIT_SHIFT;
             int filled_count = 0;
-            std::set<uint32_t> unique_region;
-            unique_region.insert(index);
+            uint32_t regions[4];
+            int region_cnt = 0;
+            regions[region_cnt++] = index;
             filled_count += 1;
 
             int offsets[3][2] = {{dx * 2, 0}, {0, dy * 2}, {dx * 2, dy * 2}};
@@ -385,7 +375,11 @@ bool check_radar(uint32_t x, uint32_t y, uint32_t /*n_row*/, uint32_t /*n_col*/,
                 int nx = offsets[k][0], ny = offsets[k][1];
                 if (puzzle[x + nx][y + ny] != AREA_BLOCK) {
                     if (solve_puzzle[x + nx][y + ny] != AREA_NORMAL) {
-                        unique_region.insert(solve_puzzle[x + nx][y + ny]);
+                        uint32_t r = solve_puzzle[x + nx][y + ny];
+                        bool dup = false;
+                        for (int m = 0; m < region_cnt; ++m)
+                            if (regions[m] == r) { dup = true; break; }
+                        if (!dup) regions[region_cnt++] = r;
                         filled_count++;
                     }
                 }
@@ -394,10 +388,10 @@ bool check_radar(uint32_t x, uint32_t y, uint32_t /*n_row*/, uint32_t /*n_col*/,
                 }
             }
             if (filled_count == 4) {
-                if (unique_region.size() != (size_t)radar_value) return false;
+                if (region_cnt != radar_value) return false;
             }
             else {
-                if (unique_region.size() + (4 - filled_count) < (size_t)radar_value) return false;
+                if (region_cnt + (4 - filled_count) < radar_value) return false;
             }
         }
         return true;

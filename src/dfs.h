@@ -27,6 +27,9 @@ struct DFSContext {
 
     int  group_mark_index = 0;
 
+    // Adjacency for block-line bipartite matching (built from empty_block_line_node_pairs)
+    std::unordered_map<uint64_t, std::vector<Node>> block_adj;
+
     // place_visited: encode Node{x,y} as uint64_t for O(1) hash lookup
     std::unordered_map<uint64_t, int> place_visited;
 };

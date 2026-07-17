@@ -204,9 +204,9 @@ int main() {
             }
         }
 
-        uint32_t** temp_shape = new uint32_t*[100];
-        for (int i = 0; i < 100; ++i) {
-            temp_shape[i] = new uint32_t[100];
+        uint32_t** temp_shape = new uint32_t*[MAX_SHAPE_SIZE];
+        for (int i = 0; i < MAX_SHAPE_SIZE; ++i) {
+            temp_shape[i] = new uint32_t[MAX_SHAPE_SIZE];
         }
         for (int size = config.shape_size_lower_bound; size <= config.shape_size_upper_bound; ++size) {
             for (int l = 1; l <= (size / l); ++l) {
@@ -222,7 +222,7 @@ int main() {
                 shapes_insert(temp_shape, shape_size);
             }
         }
-        for (int i = 0; i < 100; ++i) {
+        for (int i = 0; i < MAX_SHAPE_SIZE; ++i) {
             delete[] temp_shape[i];
         }
         delete[] temp_shape;

@@ -17,9 +17,9 @@ extern std::map<uint32_t, int> shape_index_to_shape_size_map;
 extern std::unordered_map<uint32_t, std::vector<size_t>> shape_digest_index;
 extern uint32_t next_shape_index;
 
-extern std::map<Node, std::vector<int>> node_to_shape_index;
+extern std::unordered_map<Node, std::vector<int>> node_to_shape_index;
 
-extern std::map<int, std::vector<Node>> slash_nodes;
+extern std::unordered_map<int, std::vector<Node>> slash_nodes;
 extern std::vector<Node> shape_size_nodes;
 
 extern uint32_t _temp_shape[MAX_SHAPE_SIZE][MAX_SHAPE_SIZE];

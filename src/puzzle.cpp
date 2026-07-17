@@ -32,14 +32,6 @@ std::map<uint32_t, uint32_t> shape_index_modify_map;
 // Coordinate conversion helpers
 // ------------------------------------------------------------
 
-int to_puzzle_x(int x) {
-    return (x << 1) + 1;
-}
-
-int to_puzzle_y(int y) {
-    return (y << 1) + 1;
-}
-
 // ------------------------------------------------------------
 // Parse functions
 // ------------------------------------------------------------

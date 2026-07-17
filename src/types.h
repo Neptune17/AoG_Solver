@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <functional>
 
 struct Node {
     int x, y;
@@ -25,6 +26,15 @@ struct Node {
         return x != other.x || y != other.y;
     }
 };
+
+namespace std {
+    template <>
+    struct hash<Node> {
+        std::size_t operator()(const Node& node) const noexcept {
+            return node.x * 131 + node.y;
+        }
+    };
+}
 
 struct Shape {
     uint32_t shape_index;

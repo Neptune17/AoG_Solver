@@ -59,6 +59,10 @@ struct PlaceLevel {
     int   stack_candidates_size[MAX_SHAPE_SIZE];
     int   stack_top = 0;
     std::optional<Node> symbol_loc;
+    // Slash support (replaces VLAs, max 16 slash groups)
+    bool  mark_slash[16];
+    int   slash_node_indexs[16];
+    std::vector<int> slash_dist_buf;
 };
 static PlaceLevel place_pool[MAX_DFS_DEPTH];
 
@@ -226,12 +230,10 @@ int try_place_id(int x, int y, bool value, int visited_value) {
     dfs_ctx.place_visited[encode_node(x, y)] = visited_value;
     int count = value;
 
-    for (auto pair : dfs_ctx.empty_block_line_node_pairs) {
-        if (pair.first == Node(x, y)) {
-            count += try_place_id(pair.second.x, pair.second.y, !value, visited_value);
-        }
-        if (pair.second == Node(x, y)) {
-            count += try_place_id(pair.first.x, pair.first.y, !value, visited_value);
+    auto it = dfs_ctx.block_adj.find(encode_node(x, y));
+    if (it != dfs_ctx.block_adj.end()) {
+        for (auto& neighbor : it->second) {
+            count += try_place_id(neighbor.x, neighbor.y, !value, visited_value);
         }
     }
 
@@ -253,6 +255,13 @@ void DFS_empty(int x, int y, uint32_t** solve_puzzle) {
 
     dfs_ctx.visited_index += 1;
     dfs_empty(x, y, solve_puzzle);
+
+    // Build adjacency map for O(1) neighbor lookup in try_place_id
+    dfs_ctx.block_adj.clear();
+    for (auto& p : dfs_ctx.empty_block_line_node_pairs) {
+        dfs_ctx.block_adj[encode_node(p.first.x, p.first.y)].push_back(p.second);
+        dfs_ctx.block_adj[encode_node(p.second.x, p.second.y)].push_back(p.first);
+    }
 
     dfs_ctx.place_visited.clear();
     dfs_ctx.empty_block_line_count = 0;
@@ -298,10 +307,11 @@ bool empty_area_check(uint32_t** solve_puzzle) {
                     return false;
                 }
 
-                std::set<int> unique_val_set;
+                bool seen_size[256] = {};
                 int area_shape_sizes_required_size = 0;
                 for (int val : dfs_ctx.area_shape_sizes) {
-                    if (unique_val_set.insert(val).second) {
+                    if (val >= 0 && val < 256 && !seen_size[val]) {
+                        seen_size[val] = true;
                         area_shape_sizes_required_size += val;
                     }
                 }
@@ -775,13 +785,25 @@ std::tuple<uint32_t, int, int> find_special_start_area(uint32_t** solve_puzzle) 
 int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_left_seq,
                                int known_shape_index, uint32_t** solve_puzzle) {
 
-    // VLA for slash (small, stays on stack)
-    bool mark_slash[slash_check_slash_cnt + 1];
-    memset(mark_slash, 0, sizeof(mark_slash));
-    int slash_distance[MAX_SHAPE_SIZE][slash_check_slash_cnt + 1][slash_nodes[1].size() + 1];
+    if ((size_t)index >= MAX_DFS_DEPTH) return -1; // depth guard
 
     // Pooled per-level state (avoids ~10KB stack per recursion)
     auto& L = place_pool[index];
+
+    // Slash buffers (replaces VLAs)
+    auto* mark_slash = L.mark_slash;
+    memset(mark_slash, 0, sizeof(L.mark_slash));
+    int  sd_dim2 = slash_check_slash_cnt + 1;
+    int  sd_dim3 = slash_nodes[1].size() + 1;
+    int  sd_stride2 = sd_dim3;
+    int  sd_stride1 = sd_dim2 * sd_dim3;
+    size_t sd_need = (size_t)MAX_SHAPE_SIZE * sd_dim2 * sd_dim3;
+    if (L.slash_dist_buf.size() < sd_need) L.slash_dist_buf.resize(sd_need);
+    int* sd_flat = L.slash_dist_buf.data();
+    auto sd = [&](int i, int j, int k) -> int& {
+        return sd_flat[i * sd_stride1 + j * sd_stride2 + k];
+    };
+    auto* slash_node_indexs = L.slash_node_indexs;
     auto* dfs_current_shape              = L.current_shape;
     auto& dfs_current_shape_cnt          = L.current_shape_cnt;
     auto* dfs_expand_candidates          = L.expand_candidates;
@@ -908,7 +930,9 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 continue;
             }
 
-            memset(_shape_buf, 0, sizeof(_shape_buf));
+            // Zero only bounding box (size x size), not full 100x100
+            for (uint32_t r = 0; r < size; ++r)
+                memset(_shape_buf[r], 0, size * sizeof(uint32_t));
             int start_x = 1000, start_y = 1000;
             int shape_size = 0;
             for (int i = 0; i < current_size; ++i) {
@@ -1157,20 +1181,20 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 for (int j = 0; j < (int)slash_nodes[1].size(); ++j) {
 
                     if (dfs_current_shape_cnt == 0) {
-                        slash_distance[dfs_current_shape_cnt][i][j] = dfs_current_shape_cnt;
+                        sd(dfs_current_shape_cnt, i, j) = dfs_current_shape_cnt;
                         continue;
                     }
                     else {
-                        slash_distance[dfs_current_shape_cnt][i][j] = slash_distance[dfs_current_shape_cnt - 1][i][j];
+                        sd(dfs_current_shape_cnt, i, j) = sd(dfs_current_shape_cnt - 1, i, j);
                     }
 
                     int new_distance = std::abs(x + dfs_current_shape[dfs_current_shape_cnt].x - slash_nodes[i][j].x) +
                                        std::abs(y + dfs_current_shape[dfs_current_shape_cnt].y - slash_nodes[i][j].y);
-                    int old_distance = std::abs(x + dfs_current_shape[slash_distance[dfs_current_shape_cnt][i][j]].x - slash_nodes[i][j].x) +
-                                       std::abs(y + dfs_current_shape[slash_distance[dfs_current_shape_cnt][i][j]].y - slash_nodes[i][j].y);
+                    int old_distance = std::abs(x + dfs_current_shape[sd(dfs_current_shape_cnt, i, j)].x - slash_nodes[i][j].x) +
+                                       std::abs(y + dfs_current_shape[sd(dfs_current_shape_cnt, i, j)].y - slash_nodes[i][j].y);
 
                     if (new_distance < old_distance) {
-                        slash_distance[dfs_current_shape_cnt][i][j] = dfs_current_shape_cnt;
+                        sd(dfs_current_shape_cnt, i, j) = dfs_current_shape_cnt;
                     }
                 }
             }
@@ -1236,17 +1260,14 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             bool slash_distance_fail_flag = false;
             if (slash_check_slash_cnt != 0) {
                 int distance_predict = 0x0fffffff;
-                int slash_node_indexs[slash_check_slash_cnt + 1];
-                for (int i = 1; i <= slash_check_slash_cnt; ++i) {
-                    slash_node_indexs[i] = 0;
-                }
+                memset(slash_node_indexs, 0, sizeof(L.slash_node_indexs));
                 while (true) {
                     int minx = 0, maxx = 0, miny = 0, maxy = 0;
                     for (int i = 1; i <= slash_check_slash_cnt; ++i) {
                         if (mark_slash[i]) continue;
-                        int _x = x + dfs_current_shape[slash_distance[dfs_current_shape_cnt - 1][i][slash_node_indexs[i]]].x -
+                        int _x = x + dfs_current_shape[sd(dfs_current_shape_cnt - 1, i, slash_node_indexs[i])].x -
                                  slash_nodes[i][slash_node_indexs[i]].x;
-                        int _y = y + dfs_current_shape[slash_distance[dfs_current_shape_cnt - 1][i][slash_node_indexs[i]]].y -
+                        int _y = y + dfs_current_shape[sd(dfs_current_shape_cnt - 1, i, slash_node_indexs[i])].y -
                                  slash_nodes[i][slash_node_indexs[i]].y;
                         minx = std::min(_x, minx);
                         maxx = std::max(_x, maxx);
@@ -1393,6 +1414,8 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
 // ------------------------------------------------------------
 int DFS(uint32_t index, uint32_t** solve_puzzle) {
 
+    if ((size_t)index >= MAX_DFS_DEPTH) return -1; // depth guard
+
     auto [ret, x, y] = find_special_start_area(solve_puzzle);
 
     if (ret == SPECIAL_START_DEFAULT && x == -1 && y == -1) {
@@ -1402,7 +1425,7 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
     auto* mark_skip_shape = mark_skip_pool[index];
     memset(mark_skip_shape, 0, MARK_SKIP_CAP);
 
-    bool mark_slash[slash_check_slash_cnt + 1];
+    bool mark_slash[16]; // max slash groups (4-bit field)
 
     Node compass_visited[MAX_SHAPE_SIZE];
     int compass_visited_cnt = 0;
