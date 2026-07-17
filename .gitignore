@@ -1,0 +1,6 @@
+puzzles
+.vscode
+build/
+*.o
+*.d
+main
