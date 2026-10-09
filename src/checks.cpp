@@ -493,3 +493,21 @@ PalisadeDeriveResult palisade_derive(int palisade_type, const uint8_t nb_state[4
     }
     return res;
 }
+
+// ------------------------------------------------------------
+// loopy_derive_vertex - forced/forbidden propagation for one vertex
+// ------------------------------------------------------------
+// Cell cycle around the vertex: E - P - O - Q - E. E is empty, P/O/Q resolved.
+// deg(E joins cur)  = (P != cur) + (Q != cur) + t
+// deg(E fresh region) = 2 + t   (fresh differs from both resolved neighbors)
+// where t = (P != O) + (O != Q) is fixed.
+LoopyVertexResult loopy_derive_vertex(uint32_t id_P, uint32_t id_O, uint32_t id_Q, uint32_t cur) {
+    int t = (id_P != id_O) + (id_O != id_Q);
+    bool joinable = (id_P == cur) || (id_Q == cur);
+    bool fresh_ok = (2 + t) != 3;
+    bool join_ok = joinable && ((id_P != cur) + (id_Q != cur) + t) != 3;
+    if (!fresh_ok && !join_ok) return LOOPY_FAIL;
+    if (!fresh_ok) return LOOPY_FORCE;
+    if (joinable && !join_ok) return LOOPY_FORBID;
+    return LOOPY_NONE;
+}

@@ -1192,10 +1192,11 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
     };
 
     // Constraint propagation: derive forced/forbidden neighbors from every
-    // palisade cell in the shape, then eagerly add forced cells (priority over
-    // normal DFS expansion). Returns false on contradiction.
+    // palisade cell in the shape and every loopy vertex touching it, then
+    // eagerly add forced cells (priority over normal DFS expansion).
+    // Returns false on contradiction.
     auto propagate = [&]() -> bool {
-        if (!has_palisade) return true;
+        if (!has_palisade && !config.no_3_way_intersections) return true;
         static const int pdd[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
         L.forced_buf.clear();
         while (true) {
@@ -1223,6 +1224,44 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                     if (res.forbidden_mask & (1 << d)) mark_forbidden(nx, ny);
                 }
             }
+
+            // Loopy: for each 2x2 block touching the shape, an empty cell whose
+            // other three block cells are all resolved has only two outcomes
+            // (join the shape / start a new region) — derive force/forbid/fail.
+            if (config.no_3_way_intersections) {
+                for (int i = 0; i < dfs_current_shape_cnt; ++i) {
+                    int ax = x + dfs_current_shape[i].x;
+                    int ay = y + dfs_current_shape[i].y;
+                    for (int b = 0; b < 4; ++b) {
+                        int dx = (b & 1) ? 1 : -1;
+                        int dy = (b & 2) ? 1 : -1;
+                        // cycle A-B-C-D around the vertex between the 4 cells
+                        uint32_t idA = solve_puzzle[to_puzzle_x(ax)][to_puzzle_y(ay)];
+                        uint32_t idB = solve_puzzle[to_puzzle_x(ax + dx)][to_puzzle_y(ay)];
+                        uint32_t idC = solve_puzzle[to_puzzle_x(ax + dx)][to_puzzle_y(ay + dy)];
+                        uint32_t idD = solve_puzzle[to_puzzle_x(ax)][to_puzzle_y(ay + dy)];
+                        // E=B: neighbors A,C / opposite D; E=C: neighbors B,D / opposite A;
+                        // E=D: neighbors C,A / opposite B. (E=A impossible: in shape.)
+                        struct VertexCase { uint32_t idP, idO, idQ; int ex, ey; };
+                        VertexCase cases[3] = {
+                            {idA, idD, idC, ax + dx, ay},       // E = B
+                            {idB, idA, idD, ax + dx, ay + dy},  // E = C
+                            {idC, idB, idA, ax, ay + dy},       // E = D
+                        };
+                        uint32_t idE[3] = {idB, idC, idD};
+                        for (int c = 0; c < 3; ++c) {
+                            if (idE[c] != AREA_NORMAL) continue;          // E must be empty
+                            if (cases[c].idP == AREA_NORMAL || cases[c].idO == AREA_NORMAL ||
+                                cases[c].idQ == AREA_NORMAL) continue;    // others must be resolved
+                            LoopyVertexResult vr = loopy_derive_vertex(cases[c].idP, cases[c].idO, cases[c].idQ, index);
+                            if (vr == LOOPY_FAIL) return false;
+                            if (vr == LOOPY_FORCE) L.forced_buf.push_back(Node(cases[c].ex, cases[c].ey));
+                            if (vr == LOOPY_FORBID) mark_forbidden(to_puzzle_x(cases[c].ex), to_puzzle_y(cases[c].ey));
+                        }
+                    }
+                }
+            }
+
             if (L.forced_buf.empty()) return true;
             Node f = L.forced_buf.back();
             L.forced_buf.pop_back();
@@ -1476,16 +1515,18 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                         break;
                     }
                 }
-                // With palisade forcing, a skipped candidate may still join the
-                // shape later via forced expansion — but only if it is adjacent
-                // to a palisade cell, so the early break stays sound elsewhere.
-                if (!in_current_shape && (!has_palisade || !near_palisade[expand_x][expand_y])) {
+                // The size-based break stays sound under forcing: a cell forced
+                // into the shape later only shrinks the remaining empty area,
+                // so "too small to host any region" remains true. The slash
+                // sub-check is not sound under forcing (a forced slash cell
+                // changes the counts), so it is gated off in that case.
+                if (!in_current_shape) {
                     DFS_empty(expand_x, expand_y, solve_puzzle);
                     int max_area_size = dfs_ctx.empty_count - dfs_ctx.empty_block_line_count;
                     if (max_area_size < config.shape_size_lower_bound) {
                         break;
                     }
-                    if (slash_check_enable) {
+                    if (slash_check_enable && !has_palisade && !config.no_3_way_intersections) {
                         bool check_flag = false;
                         for (int i = 1; i <= slash_check_slash_cnt; i++) {
                             if (std::abs(dfs_ctx.slash_count[i] - dfs_ctx.slash_count[1]) > 1) {
@@ -2042,7 +2083,10 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
         known_shape_index = shapes[shapes.size() - 1].shape_index;
     }
 
-    for (int size = shape_size_lower_bound; size <= shape_size_upper_bound; ++size) {
+    // place buffers are sized by MAX_SHAPE_SIZE; larger regions are out of
+    // the solver's design envelope (same limit as library shapes)
+    int capped_upper = std::min(shape_size_upper_bound, MAX_SHAPE_SIZE - 1);
+    for (int size = shape_size_lower_bound; size <= capped_upper; ++size) {
         if (!mark_size[size]) continue;
         int place_ret = place_non_predifined_shape(index, x, y, size, true, known_shape_index, solve_puzzle);
         if (place_ret != -1) return place_ret;

@@ -168,10 +168,6 @@ int main() {
             }
             if (puzzle[to_puzzle_x(x)][to_puzzle_y(y)] & AREA_PALISADE_INDEX_BIT) {
                 has_palisade = true;
-                near_palisade[x - 1][y] = true;
-                near_palisade[x + 1][y] = true;
-                near_palisade[x][y - 1] = true;
-                near_palisade[x][y + 1] = true;
             }
         }
     }

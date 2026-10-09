@@ -30,4 +30,21 @@ struct PalisadeDeriveResult {
 };
 PalisadeDeriveResult palisade_derive(int palisade_type, const uint8_t nb_state[4]);
 
+// ------------------------------------------------------------
+// Loopy (no 3-way intersection) forced/forbidden derivation
+// ------------------------------------------------------------
+// One vertex of a 2x2 block where exactly cell E is empty; P/Q are E's
+// neighbors in the cell cycle around the vertex, O is the opposite cell.
+// id_X is the solve_puzzle value (0 = empty). cur = region id being grown.
+// The vertex degree = number of region transitions around it; loopy forbids 3.
+// E can only join the current shape (if adjacent to it) or a brand-new region
+// (completed regions never grow), so both outcomes' degrees are computable.
+enum LoopyVertexResult {
+    LOOPY_NONE = 0, // no constraint
+    LOOPY_FORCE,    // E must join the current shape
+    LOOPY_FORBID,   // E must NOT join the current shape
+    LOOPY_FAIL      // no valid outcome for E: contradiction
+};
+LoopyVertexResult loopy_derive_vertex(uint32_t id_P, uint32_t id_O, uint32_t id_Q, uint32_t cur);
+
 #endif // CHECKS_H
