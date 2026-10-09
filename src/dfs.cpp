@@ -1395,6 +1395,23 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
         }
     };
 
+    // Dry run: the forced closure from the seed cell is a lower bound on the
+    // shape size — any valid shape from this start must contain the closure,
+    // so smaller sizes are impossible and a contradiction here kills this
+    // start for every size. The closure is then discarded; the normal
+    // enumeration below rediscovers it via the same propagate() path.
+    bool dry_ok = add_cell_basic(x, y, 0) && propagate();
+    int closure_size = dfs_current_shape_cnt;
+    undo_to(0); // fully restore the board; also pops any forbidden marks
+    L.forced_buf.clear();
+    dfs_expand_candidates_cnt = 1; // reset candidates back to the seed
+    if (!dry_ok) {
+        return -1; // contradiction: no valid shape from this start, any size
+    }
+    if (closure_size > (int)size) {
+        return -1; // closure larger than target size: impossible
+    }
+
     while (stack_top) {
         current_size = stack_size[stack_top - 1];
         expand_distance_lb = stack_expand_distance_lb[stack_top - 1];
