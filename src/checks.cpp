@@ -511,3 +511,20 @@ LoopyVertexResult loopy_derive_vertex(uint32_t id_P, uint32_t id_O, uint32_t id_
     if (joinable && !join_ok) return LOOPY_FORBID;
     return LOOPY_NONE;
 }
+
+// ------------------------------------------------------------
+// tatami_derive_vertex - forced propagation for one vertex
+// ------------------------------------------------------------
+// Cell cycle around the vertex: E - P - O - Q - E. E is empty, P/O/Q resolved.
+// deg(E joins cur)    = (P != cur) + (Q != cur) + t   (never 4 when joinable)
+// deg(E fresh region) = 2 + t                         (4 exactly when t == 2)
+// where t = (P != O) + (O != Q) is fixed.
+TatamiVertexResult tatami_derive_vertex(uint32_t id_P, uint32_t id_O, uint32_t id_Q, uint32_t cur) {
+    int t = (id_P != id_O) + (id_O != id_Q);
+    if (t != 2) return TATAMI_NONE; // fresh outcome valid, join never invalid
+    bool joinable = (id_P == cur) || (id_Q == cur);
+    // join outcome is valid iff at most one of P/Q is outside the shape
+    bool join_ok = joinable && ((id_P != cur) + (id_Q != cur) + t) != 4;
+    if (!join_ok) return TATAMI_FAIL;
+    return TATAMI_FORCE;
+}

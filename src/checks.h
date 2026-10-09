@@ -47,4 +47,18 @@ enum LoopyVertexResult {
 };
 LoopyVertexResult loopy_derive_vertex(uint32_t id_P, uint32_t id_O, uint32_t id_Q, uint32_t cur);
 
+// ------------------------------------------------------------
+// Tatami (no 4-way intersection) forced derivation
+// ------------------------------------------------------------
+// Same vertex setup as loopy, but the forbidden degree is 4. With one empty
+// cell E and three resolved cells, deg(E fresh) = 2 + t hits 4 exactly when
+// t = (P != O) + (O != Q) == 2; then E must join the current shape (FORCE),
+// or the branch is dead if E cannot join (FAIL). Tatami never forbids.
+enum TatamiVertexResult {
+    TATAMI_NONE = 0,  // no constraint
+    TATAMI_FORCE,     // E must join the current shape
+    TATAMI_FAIL       // E cannot join and fresh is invalid: contradiction
+};
+TatamiVertexResult tatami_derive_vertex(uint32_t id_P, uint32_t id_O, uint32_t id_Q, uint32_t cur);
+
 #endif // CHECKS_H

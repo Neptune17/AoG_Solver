@@ -1196,7 +1196,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
     // eagerly add forced cells (priority over normal DFS expansion).
     // Returns false on contradiction.
     auto propagate = [&]() -> bool {
-        if (!has_palisade && !config.no_3_way_intersections) return true;
+        if (!has_palisade && !config.no_3_way_intersections && !config.no_4_way_intersections) return true;
         static const int pdd[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
         L.forced_buf.clear();
         while (true) {
@@ -1228,7 +1228,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             // Loopy: for each 2x2 block touching the shape, an empty cell whose
             // other three block cells are all resolved has only two outcomes
             // (join the shape / start a new region) — derive force/forbid/fail.
-            if (config.no_3_way_intersections) {
+            if (config.no_3_way_intersections || config.no_4_way_intersections) {
                 for (int i = 0; i < dfs_current_shape_cnt; ++i) {
                     int ax = x + dfs_current_shape[i].x;
                     int ay = y + dfs_current_shape[i].y;
@@ -1253,10 +1253,17 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                             if (idE[c] != AREA_NORMAL) continue;          // E must be empty
                             if (cases[c].idP == AREA_NORMAL || cases[c].idO == AREA_NORMAL ||
                                 cases[c].idQ == AREA_NORMAL) continue;    // others must be resolved
-                            LoopyVertexResult vr = loopy_derive_vertex(cases[c].idP, cases[c].idO, cases[c].idQ, index);
-                            if (vr == LOOPY_FAIL) return false;
-                            if (vr == LOOPY_FORCE) L.forced_buf.push_back(Node(cases[c].ex, cases[c].ey));
-                            if (vr == LOOPY_FORBID) mark_forbidden(to_puzzle_x(cases[c].ex), to_puzzle_y(cases[c].ey));
+                            if (config.no_3_way_intersections) {
+                                LoopyVertexResult vr = loopy_derive_vertex(cases[c].idP, cases[c].idO, cases[c].idQ, index);
+                                if (vr == LOOPY_FAIL) return false;
+                                if (vr == LOOPY_FORCE) L.forced_buf.push_back(Node(cases[c].ex, cases[c].ey));
+                                if (vr == LOOPY_FORBID) mark_forbidden(to_puzzle_x(cases[c].ex), to_puzzle_y(cases[c].ey));
+                            }
+                            if (config.no_4_way_intersections) {
+                                TatamiVertexResult tr = tatami_derive_vertex(cases[c].idP, cases[c].idO, cases[c].idQ, index);
+                                if (tr == TATAMI_FAIL) return false;
+                                if (tr == TATAMI_FORCE) L.forced_buf.push_back(Node(cases[c].ex, cases[c].ey));
+                            }
                         }
                     }
                 }
@@ -1526,7 +1533,8 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                     if (max_area_size < config.shape_size_lower_bound) {
                         break;
                     }
-                    if (slash_check_enable && !has_palisade && !config.no_3_way_intersections) {
+                    if (slash_check_enable && !has_palisade && !config.no_3_way_intersections &&
+                        !config.no_4_way_intersections) {
                         bool check_flag = false;
                         for (int i = 1; i <= slash_check_slash_cnt; i++) {
                             if (std::abs(dfs_ctx.slash_count[i] - dfs_ctx.slash_count[1]) > 1) {
