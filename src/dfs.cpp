@@ -7,6 +7,7 @@
 #include <optional>
 #include <set>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -63,8 +64,23 @@ struct PlaceLevel {
     bool  mark_slash[16];
     int   slash_node_indexs[16];
     std::vector<int> slash_dist_buf;
+    // Forced/forbidden propagation (palisade)
+    std::vector<Node> forced_buf;
+    struct ForbiddenMark { int puz_x, puz_y, cnt; };
+    std::vector<ForbiddenMark> forbidden_marks;
+    bool  used_forcing = false; // any forced add / forbidden mark this call
+    // Duplicate completion suppression: digest -> (anchor offset, preview) list.
+    // The anchor (min offset) must be part of the identity: the same normalized
+    // shape can be placed at different absolute positions from the same start.
+    struct SeenShape { int anchor_x, anchor_y; std::vector<uint32_t> preview; };
+    std::unordered_map<uint32_t, std::vector<SeenShape>> seen_shapes;
 };
 static PlaceLevel place_pool[MAX_DFS_DEPTH];
+
+// Forbidden stamps: cell may not join the shape currently being grown.
+// Stamped with forbidden_call_id so stale marks from earlier calls never match.
+static uint32_t forbidden_stamp[MAX_PUZZLE_SIZE][MAX_PUZZLE_SIZE];
+static uint32_t forbidden_call_id = 0;
 
 // Encode Node{x, y} into a single uint64_t for fast hashing
 inline uint64_t encode_node(int x, int y) {
@@ -837,6 +853,15 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
     compass_visited_cnt = 0;
     symbol_loc.reset();
     stack_top = 0;
+    L.forced_buf.clear();
+    L.forbidden_marks.clear();
+    L.seen_shapes.clear();
+    L.used_forcing = false;
+    forbidden_call_id++;
+    if (forbidden_call_id == 0) { // uint32 wrap: reset all stamps (practically unreachable)
+        memset(forbidden_stamp, 0, sizeof(forbidden_stamp));
+        forbidden_call_id = 1;
+    }
 
     dfs_expand_candidates[0] = {0, 0};
     dfs_expand_candidates_distance[0] = 0;
@@ -863,17 +888,24 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
     int expand_y;
     int expand_distance;
 
-    while (stack_top) {
-        current_size = stack_size[stack_top - 1];
-        expand_distance_lb = stack_expand_distance_lb[stack_top - 1];
-        expand_x_lb = stack_expand_x_lb[stack_top - 1];
-        expand_y_lb = stack_expand_y_lb[stack_top - 1];
-        candidates_i = stack_candidates_i[stack_top - 1];
-        candidates_size = stack_candidates_size[stack_top - 1];
+    // ------------------------------------------------------------
+    // Forced/forbidden propagation helpers
+    // ------------------------------------------------------------
+    auto is_forbidden = [&](int puz_x, int puz_y) -> bool {
+        return forbidden_stamp[puz_x][puz_y] == forbidden_call_id;
+    };
 
-        stack_top--;
+    auto mark_forbidden = [&](int puz_x, int puz_y) {
+        L.used_forcing = true;
+        if (forbidden_stamp[puz_x][puz_y] != forbidden_call_id) {
+            forbidden_stamp[puz_x][puz_y] = forbidden_call_id;
+            L.forbidden_marks.push_back({puz_x, puz_y, dfs_current_shape_cnt});
+        }
+    };
 
-        while (dfs_current_shape_cnt > current_size) {
+    // Undo shape growth back to target_cnt (also pops later forbidden marks)
+    auto undo_to = [&](int target_cnt) {
+        while (dfs_current_shape_cnt > target_cnt) {
             temp_x = x + dfs_current_shape[dfs_current_shape_cnt - 1].x;
             temp_y = y + dfs_current_shape[dfs_current_shape_cnt - 1].y;
             solve_puzzle[to_puzzle_x(temp_x)][to_puzzle_y(temp_y)] = AREA_NORMAL;
@@ -901,6 +933,320 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
 
             dfs_current_shape_cnt -= 1;
         }
+        while (!L.forbidden_marks.empty() && L.forbidden_marks.back().cnt > target_cnt) {
+            forbidden_stamp[L.forbidden_marks.back().puz_x][L.forbidden_marks.back().puz_y] = 0;
+            L.forbidden_marks.pop_back();
+        }
+    };
+
+    // Add one cell (absolute coords) to the growing shape, with all incremental
+    // state maintenance and mid-expansion checks. Rolls back to the entry count
+    // on failure. Returns false when the cell cannot join the shape.
+    auto add_cell_basic = [&](int ax, int ay, int e_distance) -> bool {
+        int puz_x = to_puzzle_x(ax);
+        int puz_y = to_puzzle_y(ay);
+        int saved_cnt = dfs_current_shape_cnt;
+
+        int slash_index = 0;
+        if (puzzle[puz_x][puz_y] & AREA_SLASH_INDEX_BIT) {
+            slash_index = puzzle[puz_x][puz_y] >> AREA_SLASH_INDEX_BIT_SHIFT;
+            if (mark_slash[slash_index]) {
+                return false;
+            }
+        }
+
+        if (puzzle[puz_x][puz_y] & AREA_SHAPE_SIZE_BIT) {
+            int target_size = puzzle[puz_x][puz_y] >> AREA_SHAPE_SIZE_BIT_SHIFT;
+            if ((uint32_t)target_size != size) {
+                return false;
+            }
+        }
+
+        solve_puzzle[puz_x][puz_y] = index;
+        if (!check_edge(puz_x, puz_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+            solve_puzzle[puz_x][puz_y] = AREA_NORMAL;
+            return false;
+        }
+
+        mark_slash[slash_index] = true;
+
+        dfs_current_shape[dfs_current_shape_cnt].x = ax - x;
+        dfs_current_shape[dfs_current_shape_cnt].y = ay - y;
+        if (config.only_rectangles || config.no_rectangles) {
+            if (dfs_current_shape_cnt == 0) {
+                dfs_rectangle_up[dfs_current_shape_cnt] = ax - x;
+                dfs_rectangle_down[dfs_current_shape_cnt] = ax - x;
+                dfs_rectangle_left[dfs_current_shape_cnt] = ay - y;
+                dfs_rectangle_right[dfs_current_shape_cnt] = ay - y;
+            }
+            else {
+                dfs_rectangle_up[dfs_current_shape_cnt] = std::min(dfs_rectangle_up[dfs_current_shape_cnt - 1], ax - x);
+                dfs_rectangle_down[dfs_current_shape_cnt] = std::max(dfs_rectangle_down[dfs_current_shape_cnt - 1], ax - x);
+                dfs_rectangle_left[dfs_current_shape_cnt] = std::min(dfs_rectangle_left[dfs_current_shape_cnt - 1], ay - y);
+                dfs_rectangle_right[dfs_current_shape_cnt] = std::max(dfs_rectangle_right[dfs_current_shape_cnt - 1], ay - y);
+            }
+        }
+        for (int i = 0; i < compass_visited_cnt; ++i) {
+            if (dfs_current_shape[dfs_current_shape_cnt].x < compass_visited[i].x) compass_visited_up_cnt[i]++;
+            if (dfs_current_shape[dfs_current_shape_cnt].x > compass_visited[i].x) compass_visited_down_cnt[i]++;
+            if (dfs_current_shape[dfs_current_shape_cnt].y < compass_visited[i].y) compass_visited_left_cnt[i]++;
+            if (dfs_current_shape[dfs_current_shape_cnt].y > compass_visited[i].y) compass_visited_right_cnt[i]++;
+        }
+        for (int i = 1; i <= slash_check_slash_cnt; ++i) {
+            for (int j = 0; j < (int)slash_nodes[1].size(); ++j) {
+
+                if (dfs_current_shape_cnt == 0) {
+                    sd(dfs_current_shape_cnt, i, j) = dfs_current_shape_cnt;
+                    continue;
+                }
+                else {
+                    sd(dfs_current_shape_cnt, i, j) = sd(dfs_current_shape_cnt - 1, i, j);
+                }
+
+                int new_distance = std::abs(x + dfs_current_shape[dfs_current_shape_cnt].x - slash_nodes[i][j].x) +
+                                   std::abs(y + dfs_current_shape[dfs_current_shape_cnt].y - slash_nodes[i][j].y);
+                int old_distance = std::abs(x + dfs_current_shape[sd(dfs_current_shape_cnt, i, j)].x - slash_nodes[i][j].x) +
+                                   std::abs(y + dfs_current_shape[sd(dfs_current_shape_cnt, i, j)].y - slash_nodes[i][j].y);
+
+                if (new_distance < old_distance) {
+                    sd(dfs_current_shape_cnt, i, j) = dfs_current_shape_cnt;
+                }
+            }
+        }
+
+        dfs_current_shape_cnt++;
+
+        if (puzzle[puz_x][puz_y] & AREA_PALISADE_INDEX_BIT) {
+            palisade_visited[palisade_visited_cnt] = {ax - x, ay - y};
+            palisade_visited_cnt++;
+        }
+        if (puzzle[puz_x][puz_y] & AREA_COMPASS_ENABLE) {
+            compass_visited[compass_visited_cnt] = {ax - x, ay - y};
+            compass_visited_up_cnt[compass_visited_cnt] = 0;
+            compass_visited_down_cnt[compass_visited_cnt] = 0;
+            compass_visited_left_cnt[compass_visited_cnt] = 0;
+            compass_visited_right_cnt[compass_visited_cnt] = 0;
+            for (int w = 0; w < dfs_current_shape_cnt; ++w) {
+                if (dfs_current_shape[w].x < compass_visited[compass_visited_cnt].x) compass_visited_up_cnt[compass_visited_cnt]++;
+                if (dfs_current_shape[w].x > compass_visited[compass_visited_cnt].x) compass_visited_down_cnt[compass_visited_cnt]++;
+                if (dfs_current_shape[w].y < compass_visited[compass_visited_cnt].y) compass_visited_left_cnt[compass_visited_cnt]++;
+                if (dfs_current_shape[w].y > compass_visited[compass_visited_cnt].y) compass_visited_right_cnt[compass_visited_cnt]++;
+            }
+            compass_visited_cnt++;
+        }
+
+        bool rectangle_fail_flag = false;
+        if (config.only_rectangles) {
+            int rectangle_width = dfs_rectangle_right[dfs_current_shape_cnt - 1] - dfs_rectangle_left[dfs_current_shape_cnt - 1] + 1;
+            int rectangle_height = dfs_rectangle_down[dfs_current_shape_cnt - 1] - dfs_rectangle_up[dfs_current_shape_cnt - 1] + 1;
+            if (rectangle_width * rectangle_height > (int)size) {
+                rectangle_fail_flag = true;
+            }
+        }
+
+        bool palisade_fail_flag = false;
+        for (int i = 0; i < palisade_visited_cnt; ++i) {
+            int new_x = ((x + palisade_visited[i].x) << 1) + 1;
+            int new_y = ((y + palisade_visited[i].y) << 1) + 1;
+            if (!check_palisade_type1(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
+                palisade_fail_flag = true;
+                break;
+            }
+        }
+
+        bool compass_fail_flag = false;
+        for (int i = 0; i < compass_visited_cnt; ++i) {
+            int new_x = ((x + compass_visited[i].x) << 1) + 1;
+            int new_y = ((y + compass_visited[i].y) << 1) + 1;
+            if (puzzle_compass_up[new_x][new_y] != -1 && puzzle_compass_up[new_x][new_y] < compass_visited_up_cnt[i]) {
+                compass_fail_flag = true; break;
+            }
+            if (puzzle_compass_down[new_x][new_y] != -1 && puzzle_compass_down[new_x][new_y] < compass_visited_down_cnt[i]) {
+                compass_fail_flag = true; break;
+            }
+            if (puzzle_compass_left[new_x][new_y] != -1 && puzzle_compass_left[new_x][new_y] < compass_visited_left_cnt[i]) {
+                compass_fail_flag = true; break;
+            }
+            if (puzzle_compass_right[new_x][new_y] != -1 && puzzle_compass_right[new_x][new_y] < compass_visited_right_cnt[i]) {
+                compass_fail_flag = true; break;
+            }
+        }
+
+        bool slash_distance_fail_flag = false;
+        if (slash_check_slash_cnt != 0) {
+            int distance_predict = 0x0fffffff;
+            memset(slash_node_indexs, 0, sizeof(L.slash_node_indexs));
+            while (true) {
+                int minx = 0, maxx = 0, miny = 0, maxy = 0;
+                for (int i = 1; i <= slash_check_slash_cnt; ++i) {
+                    if (mark_slash[i]) continue;
+                    int _x = x + dfs_current_shape[sd(dfs_current_shape_cnt - 1, i, slash_node_indexs[i])].x -
+                             slash_nodes[i][slash_node_indexs[i]].x;
+                    int _y = y + dfs_current_shape[sd(dfs_current_shape_cnt - 1, i, slash_node_indexs[i])].y -
+                             slash_nodes[i][slash_node_indexs[i]].y;
+                    minx = std::min(_x, minx);
+                    maxx = std::max(_x, maxx);
+                    miny = std::min(_y, miny);
+                    maxy = std::max(_y, maxy);
+                }
+                distance_predict = std::min(distance_predict, maxx + maxy - minx - miny);
+
+                slash_node_indexs[1] += 1;
+                int temp_loc = 1;
+                bool final_flag = false;
+                while (true) {
+                    if (slash_node_indexs[temp_loc] == (int)slash_nodes[1].size()) {
+                        slash_node_indexs[temp_loc] = 0;
+                        if (temp_loc < slash_check_slash_cnt) {
+                            slash_node_indexs[temp_loc + 1] += 1;
+                            temp_loc += 1;
+                        }
+                        else {
+                            final_flag = true;
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (final_flag) break;
+            }
+
+            int remain_size = size - saved_cnt - 1;
+
+            if (distance_predict > remain_size) {
+                slash_distance_fail_flag = true;
+            }
+        }
+
+        if (palisade_fail_flag || rectangle_fail_flag || compass_fail_flag || slash_distance_fail_flag) {
+            undo_to(saved_cnt);
+            return false;
+        }
+
+        if (config.one_symbol_per_region) {
+            bool symbol_found = false;
+            if (puzzle[puz_x][puz_y] & AREA_PALISADE_INDEX_BIT) symbol_found = true;
+            if (puzzle[puz_x][puz_y] & AREA_SLASH_INDEX_BIT) symbol_found = true;
+            if (puzzle[puz_x][puz_y] & AREA_SHAPE_INDEX_BIT) symbol_found = true;
+            if (puzzle[puz_x][puz_y] & AREA_SHAPE_SIZE_BIT) symbol_found = true;
+            if (puzzle[puz_x][puz_y] & AREA_COMPASS_ENABLE) symbol_found = true;
+            if (symbol_found) {
+                if (!symbol_loc.has_value()) {
+                    symbol_loc.emplace(ax, ay);
+                }
+                else {
+                    undo_to(saved_cnt);
+                    return false;
+                }
+            }
+        }
+
+        int expand_dx[] = {0, 0, -1, 1};
+        int expand_dy[] = {-1, 1, 0, 0};
+
+        for (int d = 0; d < 4; ++d) {
+            int new_x = (ax - x) + expand_dx[d];
+            int new_y = (ay - y) + expand_dy[d];
+
+            uint32_t puzzle_value = puzzle[((x + new_x) << 1) + 1][((y + new_y) << 1) + 1];
+            if (puzzle_value == AREA_BLOCK) continue;
+
+            int solve_puzzle_value = solve_puzzle[((x + new_x) << 1) + 1][((y + new_y) << 1) + 1];
+            if (solve_puzzle_value != AREA_NORMAL) continue;
+
+            bool alreay_in_candidates = false;
+            for (int j = 0; j < dfs_current_shape_cnt; ++j) {
+                if (dfs_current_shape[j].x == new_x && dfs_current_shape[j].y == new_y) {
+                    alreay_in_candidates = true;
+                    break;
+                }
+            }
+            for (int j = 0; j < dfs_expand_candidates_cnt; ++j) {
+                if (!alreay_in_candidates && dfs_expand_candidates[j].x == new_x && dfs_expand_candidates[j].y == new_y) {
+                    alreay_in_candidates = true;
+                    break;
+                }
+            }
+            if (alreay_in_candidates) continue;
+
+            dfs_expand_candidates[dfs_expand_candidates_cnt] = {new_x, new_y};
+            dfs_expand_candidates_distance[dfs_expand_candidates_cnt] = e_distance + 1;
+            dfs_expand_candidates_cnt++;
+        }
+
+        return true;
+    };
+
+    // Recorded BFS distance of a candidate cell (used for forced expansion)
+    auto find_candidate_distance = [&](int ax, int ay) -> int {
+        int off_x = ax - x, off_y = ay - y;
+        for (int j = 0; j < dfs_expand_candidates_cnt; ++j) {
+            if (dfs_expand_candidates[j].x == off_x && dfs_expand_candidates[j].y == off_y)
+                return dfs_expand_candidates_distance[j];
+        }
+        // Unreachable for palisade-forced cells (they are always discovered when
+        // the palisade cell is added); conservative fallback.
+        return dfs_expand_candidates_cnt > 0 ? dfs_expand_candidates_distance[dfs_expand_candidates_cnt - 1] : 0;
+    };
+
+    // Constraint propagation: derive forced/forbidden neighbors from every
+    // palisade cell in the shape, then eagerly add forced cells (priority over
+    // normal DFS expansion). Returns false on contradiction.
+    auto propagate = [&]() -> bool {
+        if (!has_palisade) return true;
+        static const int pdd[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        L.forced_buf.clear();
+        while (true) {
+            for (int i = 0; i < palisade_visited_cnt; ++i) {
+                int puz_px = ((x + palisade_visited[i].x) << 1) + 1;
+                int puz_py = ((y + palisade_visited[i].y) << 1) + 1;
+                int type = (puzzle[puz_px][puz_py] & AREA_PALISADE_INDEX_BIT) >> AREA_PALISADE_INDEX_BIT_SHIFT;
+                uint8_t nb_state[4];
+                for (int d = 0; d < 4; ++d) {
+                    int nx = puz_px + 2 * pdd[d][0];
+                    int ny = puz_py + 2 * pdd[d][1];
+                    if (puzzle[nx][ny] == AREA_BLOCK ||
+                        (puzzle[puz_px + pdd[d][0]][puz_py + pdd[d][1]] & LINE_BLOCK)) nb_state[d] = 2;
+                    else if (solve_puzzle[nx][ny] == (uint32_t)index) nb_state[d] = 1;
+                    else if (solve_puzzle[nx][ny] != AREA_NORMAL) nb_state[d] = 2;
+                    else if (is_forbidden(nx, ny)) nb_state[d] = 2;
+                    else nb_state[d] = 0;
+                }
+                PalisadeDeriveResult res = palisade_derive(type, nb_state);
+                if (res.fail) return false;
+                for (int d = 0; d < 4; ++d) {
+                    int nx = puz_px + 2 * pdd[d][0];
+                    int ny = puz_py + 2 * pdd[d][1];
+                    if (res.forced_mask & (1 << d)) L.forced_buf.push_back(Node((nx - 1) >> 1, (ny - 1) >> 1));
+                    if (res.forbidden_mask & (1 << d)) mark_forbidden(nx, ny);
+                }
+            }
+            if (L.forced_buf.empty()) return true;
+            Node f = L.forced_buf.back();
+            L.forced_buf.pop_back();
+            int puz_fx = to_puzzle_x(f.x);
+            int puz_fy = to_puzzle_y(f.y);
+            if (solve_puzzle[puz_fx][puz_fy] != AREA_NORMAL) continue; // already joined
+            if (is_forbidden(puz_fx, puz_fy)) return false;            // forced && forbidden: conflict
+            if (dfs_current_shape_cnt >= (int)size) return false;      // no room for forced cell
+            L.used_forcing = true;
+            if (!add_cell_basic(f.x, f.y, find_candidate_distance(f.x, f.y))) return false;
+        }
+    };
+
+    while (stack_top) {
+        current_size = stack_size[stack_top - 1];
+        expand_distance_lb = stack_expand_distance_lb[stack_top - 1];
+        expand_x_lb = stack_expand_x_lb[stack_top - 1];
+        expand_y_lb = stack_expand_y_lb[stack_top - 1];
+        candidates_i = stack_candidates_i[stack_top - 1];
+        candidates_size = stack_candidates_size[stack_top - 1];
+
+        stack_top--;
+
+        undo_to(current_size);
         dfs_expand_candidates_cnt = candidates_size;
 
         if (current_size == (int)size) {
@@ -944,6 +1290,21 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 int sy = dfs_current_shape[i].y - start_y;
                 temp_shape[sx][sy] = 1;
                 shape_size = std::max(shape_size, std::max(sx, sy) + 1);
+            }
+
+            // Duplicate suppression: forced expansion may generate the same
+            // placement twice via different cell orders; skip exact repeats
+            // (same normalized shape AND same anchor => same absolute cells).
+            if (L.used_forcing) {
+                Shape cand_shape(temp_shape, shape_size);
+                auto& prev_list = L.seen_shapes[cand_shape.digest];
+                bool dup = false;
+                for (auto& prev : prev_list) {
+                    if (prev.anchor_x == start_x && prev.anchor_y == start_y &&
+                        prev.preview == cand_shape.preview) { dup = true; break; }
+                }
+                if (dup) continue;
+                prev_list.push_back({start_x, start_y, cand_shape.preview});
             }
 
             uint32_t shape_index = shapes_search(temp_shape, shape_size);
@@ -1082,6 +1443,13 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             expand_y = y + dfs_expand_candidates[candidates_i].y;
             expand_distance = dfs_expand_candidates_distance[candidates_i];
 
+            // Skip cells already taken by forced expansion or marked forbidden
+            if (solve_puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] != AREA_NORMAL ||
+                is_forbidden(to_puzzle_x(expand_x), to_puzzle_y(expand_y))) {
+                candidates_i++;
+                continue;
+            }
+
             bool jump_for_ordered_search = false;
             if (expand_distance < expand_distance_lb) {
                 candidates_i++;
@@ -1108,7 +1476,10 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                         break;
                     }
                 }
-                if (!in_current_shape) {
+                // With palisade forcing, a skipped candidate may still join the
+                // shape later via forced expansion — but only if it is adjacent
+                // to a palisade cell, so the early break stays sound elsewhere.
+                if (!in_current_shape && (!has_palisade || !near_palisade[expand_x][expand_y])) {
                     DFS_empty(expand_x, expand_y, solve_puzzle);
                     int max_area_size = dfs_ctx.empty_count - dfs_ctx.empty_block_line_count;
                     if (max_area_size < config.shape_size_lower_bound) {
@@ -1129,262 +1500,14 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 continue;
             }
 
-            int slash_index = 0;
-            if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_SLASH_INDEX_BIT) {
-                slash_index = puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] >> AREA_SLASH_INDEX_BIT_SHIFT;
-                if (mark_slash[slash_index]) {
-                    candidates_i++;
-                    continue;
-                }
-            }
-
-            if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_SHAPE_SIZE_BIT) {
-                int target_size = puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] >> AREA_SHAPE_SIZE_BIT_SHIFT;
-                if ((uint32_t)target_size != size) {
-                    candidates_i++;
-                    continue;
-                }
-            }
-
-            solve_puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] = index;
-            if (!check_edge(to_puzzle_x(expand_x), to_puzzle_y(expand_y), puzzle_n_row, puzzle_n_col, solve_puzzle)) {
-                solve_puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] = AREA_NORMAL;
+            int base_cnt = dfs_current_shape_cnt;
+            int base_cand_cnt = dfs_expand_candidates_cnt;
+            if (!add_cell_basic(expand_x, expand_y, expand_distance) || !propagate()) {
+                undo_to(base_cnt);
+                // discard candidate entries pushed by the rolled-back cells
+                dfs_expand_candidates_cnt = base_cand_cnt;
                 candidates_i++;
                 continue;
-            }
-
-            mark_slash[slash_index] = true;
-
-            dfs_current_shape[dfs_current_shape_cnt].x = dfs_expand_candidates[candidates_i].x;
-            dfs_current_shape[dfs_current_shape_cnt].y = dfs_expand_candidates[candidates_i].y;
-            if (config.only_rectangles || config.no_rectangles) {
-                if (dfs_current_shape_cnt == 0) {
-                    dfs_rectangle_up[dfs_current_shape_cnt] = dfs_expand_candidates[candidates_i].x;
-                    dfs_rectangle_down[dfs_current_shape_cnt] = dfs_expand_candidates[candidates_i].x;
-                    dfs_rectangle_left[dfs_current_shape_cnt] = dfs_expand_candidates[candidates_i].y;
-                    dfs_rectangle_right[dfs_current_shape_cnt] = dfs_expand_candidates[candidates_i].y;
-                }
-                else {
-                    dfs_rectangle_up[dfs_current_shape_cnt] = std::min(dfs_rectangle_up[dfs_current_shape_cnt - 1], dfs_expand_candidates[candidates_i].x);
-                    dfs_rectangle_down[dfs_current_shape_cnt] = std::max(dfs_rectangle_down[dfs_current_shape_cnt - 1], dfs_expand_candidates[candidates_i].x);
-                    dfs_rectangle_left[dfs_current_shape_cnt] = std::min(dfs_rectangle_left[dfs_current_shape_cnt - 1], dfs_expand_candidates[candidates_i].y);
-                    dfs_rectangle_right[dfs_current_shape_cnt] = std::max(dfs_rectangle_right[dfs_current_shape_cnt - 1], dfs_expand_candidates[candidates_i].y);
-                }
-            }
-            for (int i = 0; i < compass_visited_cnt; ++i) {
-                if (dfs_current_shape[dfs_current_shape_cnt].x < compass_visited[i].x) compass_visited_up_cnt[i]++;
-                if (dfs_current_shape[dfs_current_shape_cnt].x > compass_visited[i].x) compass_visited_down_cnt[i]++;
-                if (dfs_current_shape[dfs_current_shape_cnt].y < compass_visited[i].y) compass_visited_left_cnt[i]++;
-                if (dfs_current_shape[dfs_current_shape_cnt].y > compass_visited[i].y) compass_visited_right_cnt[i]++;
-            }
-            for (int i = 1; i <= slash_check_slash_cnt; ++i) {
-                for (int j = 0; j < (int)slash_nodes[1].size(); ++j) {
-
-                    if (dfs_current_shape_cnt == 0) {
-                        sd(dfs_current_shape_cnt, i, j) = dfs_current_shape_cnt;
-                        continue;
-                    }
-                    else {
-                        sd(dfs_current_shape_cnt, i, j) = sd(dfs_current_shape_cnt - 1, i, j);
-                    }
-
-                    int new_distance = std::abs(x + dfs_current_shape[dfs_current_shape_cnt].x - slash_nodes[i][j].x) +
-                                       std::abs(y + dfs_current_shape[dfs_current_shape_cnt].y - slash_nodes[i][j].y);
-                    int old_distance = std::abs(x + dfs_current_shape[sd(dfs_current_shape_cnt, i, j)].x - slash_nodes[i][j].x) +
-                                       std::abs(y + dfs_current_shape[sd(dfs_current_shape_cnt, i, j)].y - slash_nodes[i][j].y);
-
-                    if (new_distance < old_distance) {
-                        sd(dfs_current_shape_cnt, i, j) = dfs_current_shape_cnt;
-                    }
-                }
-            }
-
-            dfs_current_shape_cnt++;
-
-            if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_PALISADE_INDEX_BIT) {
-                palisade_visited[palisade_visited_cnt] = {dfs_expand_candidates[candidates_i].x, dfs_expand_candidates[candidates_i].y};
-                palisade_visited_cnt++;
-            }
-            if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_COMPASS_ENABLE) {
-                compass_visited[compass_visited_cnt] = {dfs_expand_candidates[candidates_i].x, dfs_expand_candidates[candidates_i].y};
-                compass_visited_up_cnt[compass_visited_cnt] = 0;
-                compass_visited_down_cnt[compass_visited_cnt] = 0;
-                compass_visited_left_cnt[compass_visited_cnt] = 0;
-                compass_visited_right_cnt[compass_visited_cnt] = 0;
-                for (int w = 0; w < dfs_current_shape_cnt; ++w) {
-                    if (dfs_current_shape[w].x < compass_visited[compass_visited_cnt].x) compass_visited_up_cnt[compass_visited_cnt]++;
-                    if (dfs_current_shape[w].x > compass_visited[compass_visited_cnt].x) compass_visited_down_cnt[compass_visited_cnt]++;
-                    if (dfs_current_shape[w].y < compass_visited[compass_visited_cnt].y) compass_visited_left_cnt[compass_visited_cnt]++;
-                    if (dfs_current_shape[w].y > compass_visited[compass_visited_cnt].y) compass_visited_right_cnt[compass_visited_cnt]++;
-                }
-                compass_visited_cnt++;
-            }
-
-            bool rectangle_fail_flag = false;
-            if (config.only_rectangles) {
-                int rectangle_width = dfs_rectangle_right[dfs_current_shape_cnt - 1] - dfs_rectangle_left[dfs_current_shape_cnt - 1] + 1;
-                int rectangle_height = dfs_rectangle_down[dfs_current_shape_cnt - 1] - dfs_rectangle_up[dfs_current_shape_cnt - 1] + 1;
-                if (rectangle_width * rectangle_height > (int)size) {
-                    rectangle_fail_flag = true;
-                }
-            }
-
-            bool palisade_fail_flag = false;
-            for (int i = 0; i < palisade_visited_cnt; ++i) {
-                int new_x = ((x + palisade_visited[i].x) << 1) + 1;
-                int new_y = ((y + palisade_visited[i].y) << 1) + 1;
-                if (!check_palisade_type1(new_x, new_y, puzzle_n_row, puzzle_n_col, solve_puzzle)) {
-                    palisade_fail_flag = true;
-                    break;
-                }
-            }
-
-            bool compass_fail_flag = false;
-            for (int i = 0; i < compass_visited_cnt; ++i) {
-                int new_x = ((x + compass_visited[i].x) << 1) + 1;
-                int new_y = ((y + compass_visited[i].y) << 1) + 1;
-                if (puzzle_compass_up[new_x][new_y] != -1 && puzzle_compass_up[new_x][new_y] < compass_visited_up_cnt[i]) {
-                    compass_fail_flag = true; break;
-                }
-                if (puzzle_compass_down[new_x][new_y] != -1 && puzzle_compass_down[new_x][new_y] < compass_visited_down_cnt[i]) {
-                    compass_fail_flag = true; break;
-                }
-                if (puzzle_compass_left[new_x][new_y] != -1 && puzzle_compass_left[new_x][new_y] < compass_visited_left_cnt[i]) {
-                    compass_fail_flag = true; break;
-                }
-                if (puzzle_compass_right[new_x][new_y] != -1 && puzzle_compass_right[new_x][new_y] < compass_visited_right_cnt[i]) {
-                    compass_fail_flag = true; break;
-                }
-            }
-
-            bool slash_distance_fail_flag = false;
-            if (slash_check_slash_cnt != 0) {
-                int distance_predict = 0x0fffffff;
-                memset(slash_node_indexs, 0, sizeof(L.slash_node_indexs));
-                while (true) {
-                    int minx = 0, maxx = 0, miny = 0, maxy = 0;
-                    for (int i = 1; i <= slash_check_slash_cnt; ++i) {
-                        if (mark_slash[i]) continue;
-                        int _x = x + dfs_current_shape[sd(dfs_current_shape_cnt - 1, i, slash_node_indexs[i])].x -
-                                 slash_nodes[i][slash_node_indexs[i]].x;
-                        int _y = y + dfs_current_shape[sd(dfs_current_shape_cnt - 1, i, slash_node_indexs[i])].y -
-                                 slash_nodes[i][slash_node_indexs[i]].y;
-                        minx = std::min(_x, minx);
-                        maxx = std::max(_x, maxx);
-                        miny = std::min(_y, miny);
-                        maxy = std::max(_y, maxy);
-                    }
-                    distance_predict = std::min(distance_predict, maxx + maxy - minx - miny);
-
-                    slash_node_indexs[1] += 1;
-                    int temp_loc = 1;
-                    bool final_flag = false;
-                    while (true) {
-                        if (slash_node_indexs[temp_loc] == (int)slash_nodes[1].size()) {
-                            slash_node_indexs[temp_loc] = 0;
-                            if (temp_loc < slash_check_slash_cnt) {
-                                slash_node_indexs[temp_loc + 1] += 1;
-                                temp_loc += 1;
-                            }
-                            else {
-                                final_flag = true;
-                                break;
-                            }
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    if (final_flag) break;
-                }
-
-                int remain_size = size - current_size - 1;
-
-                if (distance_predict > remain_size) {
-                    slash_distance_fail_flag = true;
-                }
-            }
-
-            if (palisade_fail_flag || rectangle_fail_flag || compass_fail_flag || slash_distance_fail_flag) {
-                mark_slash[slash_index] = false;
-                solve_puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] = AREA_NORMAL;
-                dfs_current_shape_cnt--;
-                candidates_i++;
-                if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_PALISADE_INDEX_BIT) {
-                    palisade_visited_cnt--;
-                }
-                if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_COMPASS_ENABLE) {
-                    compass_visited_cnt--;
-                }
-                for (int i = 0; i < compass_visited_cnt; ++i) {
-                    if (dfs_current_shape[dfs_current_shape_cnt].x < compass_visited[i].x) compass_visited_up_cnt[i]--;
-                    if (dfs_current_shape[dfs_current_shape_cnt].x > compass_visited[i].x) compass_visited_down_cnt[i]--;
-                    if (dfs_current_shape[dfs_current_shape_cnt].y < compass_visited[i].y) compass_visited_left_cnt[i]--;
-                    if (dfs_current_shape[dfs_current_shape_cnt].y > compass_visited[i].y) compass_visited_right_cnt[i]--;
-                }
-                continue;
-            }
-
-            if (config.one_symbol_per_region) {
-                bool symbol_found = false;
-                if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_PALISADE_INDEX_BIT) symbol_found = true;
-                if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_SLASH_INDEX_BIT) symbol_found = true;
-                if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_SHAPE_INDEX_BIT) symbol_found = true;
-                if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_SHAPE_SIZE_BIT) symbol_found = true;
-                if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_COMPASS_ENABLE) symbol_found = true;
-                if (symbol_found) {
-                    if (!symbol_loc.has_value()) {
-                        symbol_loc.emplace(expand_x, expand_y);
-                    }
-                    else {
-                        mark_slash[slash_index] = false;
-                        solve_puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] = AREA_NORMAL;
-                        dfs_current_shape_cnt--;
-                        candidates_i++;
-                        if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_PALISADE_INDEX_BIT) palisade_visited_cnt--;
-                        if (puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] & AREA_COMPASS_ENABLE) compass_visited_cnt--;
-                        for (int i = 0; i < compass_visited_cnt; ++i) {
-                            if (dfs_current_shape[dfs_current_shape_cnt].x < compass_visited[i].x) compass_visited_up_cnt[i]--;
-                            if (dfs_current_shape[dfs_current_shape_cnt].x > compass_visited[i].x) compass_visited_down_cnt[i]--;
-                            if (dfs_current_shape[dfs_current_shape_cnt].y < compass_visited[i].y) compass_visited_left_cnt[i]--;
-                            if (dfs_current_shape[dfs_current_shape_cnt].y > compass_visited[i].y) compass_visited_right_cnt[i]--;
-                        }
-                        continue;
-                    }
-                }
-            }
-
-            int expand_dx[] = {0, 0, -1, 1};
-            int expand_dy[] = {-1, 1, 0, 0};
-
-            for (int d = 0; d < 4; ++d) {
-                int new_x = dfs_expand_candidates[candidates_i].x + expand_dx[d];
-                int new_y = dfs_expand_candidates[candidates_i].y + expand_dy[d];
-
-                uint32_t puzzle_value = puzzle[((x + new_x) << 1) + 1][((y + new_y) << 1) + 1];
-                if (puzzle_value == AREA_BLOCK) continue;
-
-                int solve_puzzle_value = solve_puzzle[((x + new_x) << 1) + 1][((y + new_y) << 1) + 1];
-                if (solve_puzzle_value != AREA_NORMAL) continue;
-
-                bool alreay_in_candidates = false;
-                for (int j = 0; j < dfs_current_shape_cnt; ++j) {
-                    if (dfs_current_shape[j].x == new_x && dfs_current_shape[j].y == new_y) {
-                        alreay_in_candidates = true;
-                        break;
-                    }
-                }
-                for (int j = 0; j < dfs_expand_candidates_cnt; ++j) {
-                    if (!alreay_in_candidates && dfs_expand_candidates[j].x == new_x && dfs_expand_candidates[j].y == new_y) {
-                        alreay_in_candidates = true;
-                        break;
-                    }
-                }
-                if (alreay_in_candidates) continue;
-
-                dfs_expand_candidates[dfs_expand_candidates_cnt] = {new_x, new_y};
-                dfs_expand_candidates_distance[dfs_expand_candidates_cnt] = expand_distance + 1;
-                dfs_expand_candidates_cnt++;
             }
 
             stack_size[stack_top] = current_size;
@@ -1395,7 +1518,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             stack_candidates_size[stack_top] = candidates_size;
             stack_top++;
 
-            stack_size[stack_top] = current_size + 1;
+            stack_size[stack_top] = dfs_current_shape_cnt; // includes eagerly added forced cells
             stack_expand_distance_lb[stack_top] = expand_distance;
             stack_expand_x_lb[stack_top] = expand_x;
             stack_expand_y_lb[stack_top] = expand_y;
@@ -1723,6 +1846,40 @@ int DFS(uint32_t index, uint32_t** solve_puzzle) {
                 { ret_code |= RET_CODE_COMPASS; break; }
                 if (puzzle_compass_right[compass_puzzle_x][compass_puzzle_y] != -1 && puzzle_compass_right[compass_puzzle_x][compass_puzzle_y] != compass_states.right)
                 { ret_code |= RET_CODE_COMPASS; break; }
+            }
+
+            // Type 1 check: PALISADE exact forced/forbidden validation.
+            // The shape is fixed, so a neighbor either is covered by the shape
+            // or never joins it (dead) — palisade_derive fails exactly when
+            // check_palisade_type2 would fail at Type 3, but here we reject
+            // before writing anything to solve_puzzle.
+            if (has_palisade && ret_code == 0) {
+                static const int pdd[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+                for (int j = 0; j < (int)shapes[i].nodes.size(); ++j) {
+                    int cx = x + shapes[i].nodes[j].x - start_x;
+                    int cy = y + shapes[i].nodes[j].y - start_y;
+                    uint32_t pval_c = puzzle[to_puzzle_x(cx)][to_puzzle_y(cy)];
+                    if ((pval_c & AREA_PALISADE_INDEX_BIT) == 0) continue;
+                    int palisade_type = (pval_c & AREA_PALISADE_INDEX_BIT) >> AREA_PALISADE_INDEX_BIT_SHIFT;
+                    uint8_t nb_state[4];
+                    for (int d = 0; d < 4; ++d) {
+                        int nx = cx + pdd[d][0];
+                        int ny = cy + pdd[d][1];
+                        bool in_shape = false;
+                        for (int k = 0; k < (int)shapes[i].nodes.size(); ++k) {
+                            if (x + shapes[i].nodes[k].x - start_x == nx &&
+                                y + shapes[i].nodes[k].y - start_y == ny) {
+                                in_shape = true;
+                                break;
+                            }
+                        }
+                        nb_state[d] = in_shape ? 1 : 2;
+                    }
+                    if (palisade_derive(palisade_type, nb_state).fail) {
+                        ret_code |= RET_CODE_PALISADE;
+                        break;
+                    }
+                }
             }
 
             // Type 1 check finished

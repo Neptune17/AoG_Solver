@@ -20,6 +20,9 @@ int puzzle_compass_right[MAX_PUZZLE_SIZE][MAX_PUZZLE_SIZE];
 bool slash_check_enable = false;
 int slash_check_slash_cnt = 0;
 
+bool has_palisade = false;
+bool near_palisade[MAX_PUZZLE_SIZE][MAX_PUZZLE_SIZE] = {};
+
 bool shape_compare_enable = false;
 
 int all_shapes_same_check_shape_index = -1;

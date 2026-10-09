@@ -404,3 +404,92 @@ bool check_radar(uint32_t x, uint32_t y, uint32_t /*n_row*/, uint32_t /*n_col*/,
 
     return true;
 }
+
+// ------------------------------------------------------------
+// palisade_derive - forced/forbidden neighbor propagation
+// ------------------------------------------------------------
+// Neighbor slots: 0=up, 1=down, 2=left, 3=right
+// nb_state: 0=open, 1=in_shape, 2=dead
+PalisadeDeriveResult palisade_derive(int palisade_type, const uint8_t nb_state[4]) {
+    PalisadeDeriveResult res{false, 0, 0};
+
+    int in_cnt = 0, open_cnt = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (nb_state[i] == 1) in_cnt++;
+        else if (nb_state[i] == 0) open_cnt++;
+    }
+
+    // Quota-based types: exactly `quota` neighbors in shape
+    auto derive_quota = [&](int quota) {
+        int need = quota - in_cnt;
+        if (need < 0 || need > open_cnt) { res.fail = true; return; }
+        if (need == 0) {
+            for (int i = 0; i < 4; ++i)
+                if (nb_state[i] == 0) res.forbidden_mask |= (1 << i);
+        }
+        else if (need == open_cnt) {
+            for (int i = 0; i < 4; ++i)
+                if (nb_state[i] == 0) res.forced_mask |= (1 << i);
+        }
+    };
+
+    // Pair-based types: exactly one of the given neighbor pairs in shape
+    auto derive_pair = [&](const uint8_t pairs[][2], int pair_cnt) {
+        uint8_t remain_intersect = 0xf; // cells in every remaining pair
+        uint8_t remain_union = 0;       // cells in some remaining pair
+        int remain_cnt = 0;
+        for (int p = 0; p < pair_cnt; ++p) {
+            int a = pairs[p][0], b = pairs[p][1];
+            // pair impossible if an endpoint is dead, or an in-shape cell
+            // exists outside this pair (the final pair must contain it)
+            if (nb_state[a] == 2 || nb_state[b] == 2) continue;
+            bool covers_all_in = true;
+            for (int i = 0; i < 4; ++i)
+                if (nb_state[i] == 1 && i != a && i != b) { covers_all_in = false; break; }
+            if (!covers_all_in) continue;
+            remain_cnt++;
+            remain_intersect &= (uint8_t)((1 << a) | (1 << b));
+            remain_union |= (uint8_t)((1 << a) | (1 << b));
+        }
+        if (remain_cnt == 0) { res.fail = true; return; }
+        for (int i = 0; i < 4; ++i) {
+            if (remain_intersect & (1 << i)) {
+                if (nb_state[i] == 0) res.forced_mask |= (1 << i);
+            }
+            else if (!(remain_union & (1 << i))) {
+                if (nb_state[i] == 1) { res.fail = true; return; }
+                if (nb_state[i] == 0) res.forbidden_mask |= (1 << i);
+            }
+        }
+    };
+
+    static const uint8_t straight_pairs[2][2] = {{0, 1}, {2, 3}};
+    static const uint8_t corner_pairs[4][2] = {{0, 3}, {3, 1}, {1, 2}, {2, 0}};
+
+    switch (palisade_type) {
+        case 1: // F0: all 4 neighbors in shape
+            for (int i = 0; i < 4; ++i) {
+                if (nb_state[i] == 2) { res.fail = true; return res; }
+                if (nb_state[i] == 0) res.forced_mask |= (1 << i);
+            }
+            break;
+        case 6: // F4: no neighbor in shape
+            if (in_cnt > 0) { res.fail = true; return res; }
+            for (int i = 0; i < 4; ++i)
+                if (nb_state[i] == 0) res.forbidden_mask |= (1 << i);
+            break;
+        case 2: // F1: exactly 3 neighbors in shape
+            derive_quota(3);
+            break;
+        case 4: // F3: exactly 1 neighbor in shape
+            derive_quota(1);
+            break;
+        case 3: // F2: exactly 2 neighbors in shape, straight line
+            derive_pair(straight_pairs, 2);
+            break;
+        case 5: // F7: exactly 2 neighbors in shape, corner
+            derive_pair(corner_pairs, 4);
+            break;
+    }
+    return res;
+}

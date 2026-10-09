@@ -166,6 +166,13 @@ int main() {
                 slash_check_enable = true;
                 slash_check_slash_cnt = std::max(slash_check_slash_cnt, slash_index);
             }
+            if (puzzle[to_puzzle_x(x)][to_puzzle_y(y)] & AREA_PALISADE_INDEX_BIT) {
+                has_palisade = true;
+                near_palisade[x - 1][y] = true;
+                near_palisade[x + 1][y] = true;
+                near_palisade[x][y - 1] = true;
+                near_palisade[x][y + 1] = true;
+            }
         }
     }
 

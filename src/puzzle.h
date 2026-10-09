@@ -46,6 +46,12 @@ extern int puzzle_compass_right[MAX_PUZZLE_SIZE][MAX_PUZZLE_SIZE];
 extern bool slash_check_enable;
 extern int slash_check_slash_cnt;
 
+extern bool has_palisade;
+// Static per-puzzle bitmap: cell is a neighbor of some palisade symbol cell.
+// Only such cells can ever become "forced" during shape growth, so the
+// ordered-search early break stays sound for all other cells.
+extern bool near_palisade[MAX_PUZZLE_SIZE][MAX_PUZZLE_SIZE];
+
 extern bool shape_compare_enable;
 
 extern int all_shapes_same_check_shape_index;
