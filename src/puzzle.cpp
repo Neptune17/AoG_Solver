@@ -21,6 +21,8 @@ bool slash_check_enable = false;
 int slash_check_slash_cnt = 0;
 
 bool has_palisade = false;
+bool has_radar = false;
+bool has_compass = false;
 
 bool shape_compare_enable = false;
 

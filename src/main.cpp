@@ -172,6 +172,14 @@ int main() {
         }
     }
 
+    for (int x = 0; x <= (int)puzzle_n_row + 1; ++x) {
+        for (int y = 0; y <= (int)puzzle_n_col + 1; ++y) {
+            if (puzzle[to_puzzle_x(x) - 1][to_puzzle_y(y) - 1] & VERTEX_RADAR_BIT) {
+                has_radar = true;
+            }
+        }
+    }
+
     for (int x = 1; x <= slash_check_slash_cnt; ++x) {
         slash_nodes[x] = std::vector<Node>();
     }

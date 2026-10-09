@@ -47,6 +47,8 @@ extern bool slash_check_enable;
 extern int slash_check_slash_cnt;
 
 extern bool has_palisade;
+extern bool has_radar;
+extern bool has_compass;
 
 extern bool shape_compare_enable;
 

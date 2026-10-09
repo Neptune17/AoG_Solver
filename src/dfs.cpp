@@ -1191,12 +1191,33 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
         return dfs_expand_candidates_cnt > 0 ? dfs_expand_candidates_distance[dfs_expand_candidates_cnt - 1] : 0;
     };
 
+    // Compass saturation: a direction whose cell quota is already met must not
+    // receive more cells. Evaluated live from current counts (backtrack-safe,
+    // no stamps needed). Only meaningful while a compass cell is in the shape.
+    auto compass_forbidden = [&](int ax, int ay) -> bool {
+        for (int i = 0; i < compass_visited_cnt; ++i) {
+            int cx = x + compass_visited[i].x;
+            int cy = y + compass_visited[i].y;
+            int px = to_puzzle_x(cx), py = to_puzzle_y(cy);
+            if (ax < cx && puzzle_compass_up[px][py] != -1 &&
+                compass_visited_up_cnt[i] >= puzzle_compass_up[px][py]) return true;
+            if (ax > cx && puzzle_compass_down[px][py] != -1 &&
+                compass_visited_down_cnt[i] >= puzzle_compass_down[px][py]) return true;
+            if (ay < cy && puzzle_compass_left[px][py] != -1 &&
+                compass_visited_left_cnt[i] >= puzzle_compass_left[px][py]) return true;
+            if (ay > cy && puzzle_compass_right[px][py] != -1 &&
+                compass_visited_right_cnt[i] >= puzzle_compass_right[px][py]) return true;
+        }
+        return false;
+    };
+
     // Constraint propagation: derive forced/forbidden neighbors from every
     // palisade cell in the shape and every loopy vertex touching it, then
     // eagerly add forced cells (priority over normal DFS expansion).
     // Returns false on contradiction.
     auto propagate = [&]() -> bool {
-        if (!has_palisade && !config.no_3_way_intersections && !config.no_4_way_intersections) return true;
+        if (!has_palisade && !config.no_3_way_intersections && !config.no_4_way_intersections &&
+            !has_radar && !has_compass) return true;
         static const int pdd[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
         L.forced_buf.clear();
         while (true) {
@@ -1269,13 +1290,105 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                 }
             }
 
+            // Radar: for each radar vertex touching the shape, n_fixed distinct
+            // resolved regions + e empty cells must reach R at completion.
+            // n_fixed == R  => every empty cell must join the (only growable)
+            //                  current shape => forced (when adjacent now).
+            // n_fixed + e == R => every empty cell must start a new region
+            //                  => forbidden for the current shape.
+            if (has_radar) {
+                for (int i = 0; i < dfs_current_shape_cnt; ++i) {
+                    int ax = x + dfs_current_shape[i].x;
+                    int ay = y + dfs_current_shape[i].y;
+                    int puz_ax = to_puzzle_x(ax), puz_ay = to_puzzle_y(ay);
+                    for (int dx = -1; dx <= 1; dx += 2) {
+                        for (int dy = -1; dy <= 1; dy += 2) {
+                            uint32_t vval = puzzle[puz_ax + dx][puz_ay + dy];
+                            if (!(vval & VERTEX_RADAR_BIT)) continue;
+                            int radar_target = vval & VERTEX_RADAR_BIT;
+                            int cellx[4] = {ax, ax + dx, ax, ax + dx};
+                            int celly[4] = {ay, ay, ay + dy, ay + dy};
+                            uint32_t ids[4];
+                            uint32_t seen[4];
+                            int n_fixed = 0, e = 0, empty_k[4];
+                            for (int k = 0; k < 4; ++k) {
+                                ids[k] = solve_puzzle[to_puzzle_x(cellx[k])][to_puzzle_y(celly[k])];
+                                if (ids[k] == AREA_NORMAL) { empty_k[e++] = k; continue; }
+                                if (ids[k] == 0x80000000u) continue; // blocked/fence: not a region
+                                bool dup = false;
+                                for (int m = 0; m < n_fixed; ++m) if (seen[m] == ids[k]) { dup = true; break; }
+                                if (!dup) seen[n_fixed++] = ids[k];
+                            }
+                            if (n_fixed > radar_target || n_fixed + e < radar_target) return false;
+                            if (e == 0) continue;
+                            if (n_fixed == radar_target) {
+                                // empty cells must merge into the current shape
+                                static const int nd[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
+                                for (int k = 0; k < e; ++k) {
+                                    int ex = cellx[empty_k[k]], ey = celly[empty_k[k]];
+                                    bool adjacent = false;
+                                    for (int d = 0; d < 4; ++d) {
+                                        if (solve_puzzle[to_puzzle_x(ex + nd[d][0])][to_puzzle_y(ey + nd[d][1])] == (uint32_t)index) {
+                                            adjacent = true; break;
+                                        }
+                                    }
+                                    // not adjacent now: may become adjacent later; just don't force yet
+                                    if (adjacent) L.forced_buf.push_back(Node(ex, ey));
+                                }
+                            }
+                            else if (n_fixed + e == radar_target) {
+                                // empty cells must each start a new region
+                                for (int k = 0; k < e; ++k)
+                                    mark_forbidden(to_puzzle_x(cellx[empty_k[k]]), to_puzzle_y(celly[empty_k[k]]));
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Compass gateway check: an unmet direction quota with no live
+            // gateway (empty, allowed candidate) can never be fulfilled.
+            if (has_compass) {
+                for (int i = 0; i < compass_visited_cnt; ++i) {
+                    int cx = x + compass_visited[i].x;
+                    int cy = y + compass_visited[i].y;
+                    int px = to_puzzle_x(cx), py = to_puzzle_y(cy);
+                    for (int d = 0; d < 4; ++d) {
+                        int target = (d == 0) ? puzzle_compass_up[px][py] : (d == 1) ? puzzle_compass_down[px][py] :
+                                     (d == 2) ? puzzle_compass_left[px][py] : puzzle_compass_right[px][py];
+                        int cnt = (d == 0) ? compass_visited_up_cnt[i] : (d == 1) ? compass_visited_down_cnt[i] :
+                                  (d == 2) ? compass_visited_left_cnt[i] : compass_visited_right_cnt[i];
+                        if (target == -1 || cnt >= target) continue;
+                        bool found = false;
+                        for (int j = 0; j < dfs_expand_candidates_cnt && !found; ++j) {
+                            int gx = x + dfs_expand_candidates[j].x;
+                            int gy = y + dfs_expand_candidates[j].y;
+                            bool in_dir = (d == 0) ? (gx < cx) : (d == 1) ? (gx > cx) :
+                                          (d == 2) ? (gy < cy) : (gy > cy);
+                            if (!in_dir) continue;
+                            if (solve_puzzle[to_puzzle_x(gx)][to_puzzle_y(gy)] != AREA_NORMAL) continue;
+                            if (is_forbidden(to_puzzle_x(gx), to_puzzle_y(gy))) continue;
+                            if (compass_forbidden(gx, gy)) continue;
+                            found = true;
+                        }
+                        for (auto& f : L.forced_buf) {
+                            if (found) break;
+                            bool in_dir = (d == 0) ? (f.x < cx) : (d == 1) ? (f.x > cx) :
+                                          (d == 2) ? (f.y < cy) : (f.y > cy);
+                            if (in_dir) found = true;
+                        }
+                        if (!found) return false;
+                    }
+                }
+            }
+
             if (L.forced_buf.empty()) return true;
             Node f = L.forced_buf.back();
             L.forced_buf.pop_back();
             int puz_fx = to_puzzle_x(f.x);
             int puz_fy = to_puzzle_y(f.y);
             if (solve_puzzle[puz_fx][puz_fy] != AREA_NORMAL) continue; // already joined
-            if (is_forbidden(puz_fx, puz_fy)) return false;            // forced && forbidden: conflict
+            if (is_forbidden(puz_fx, puz_fy) || compass_forbidden(f.x, f.y)) return false; // forced && forbidden: conflict
             if (dfs_current_shape_cnt >= (int)size) return false;      // no room for forced cell
             L.used_forcing = true;
             if (!add_cell_basic(f.x, f.y, find_candidate_distance(f.x, f.y))) return false;
@@ -1489,9 +1602,11 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
             expand_y = y + dfs_expand_candidates[candidates_i].y;
             expand_distance = dfs_expand_candidates_distance[candidates_i];
 
-            // Skip cells already taken by forced expansion or marked forbidden
+            // Skip cells already taken by forced expansion, marked forbidden,
+            // or in a saturated compass direction of an in-shape compass cell
             if (solve_puzzle[to_puzzle_x(expand_x)][to_puzzle_y(expand_y)] != AREA_NORMAL ||
-                is_forbidden(to_puzzle_x(expand_x), to_puzzle_y(expand_y))) {
+                is_forbidden(to_puzzle_x(expand_x), to_puzzle_y(expand_y)) ||
+                compass_forbidden(expand_x, expand_y)) {
                 candidates_i++;
                 continue;
             }
@@ -1534,7 +1649,7 @@ int place_non_predifined_shape(int index, int x, int y, uint32_t size, bool up_l
                         break;
                     }
                     if (slash_check_enable && !has_palisade && !config.no_3_way_intersections &&
-                        !config.no_4_way_intersections) {
+                        !config.no_4_way_intersections && !has_radar) {
                         bool check_flag = false;
                         for (int i = 1; i <= slash_check_slash_cnt; i++) {
                             if (std::abs(dfs_ctx.slash_count[i] - dfs_ctx.slash_count[1]) > 1) {
